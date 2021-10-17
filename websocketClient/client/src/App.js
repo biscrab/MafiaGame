@@ -1,33 +1,42 @@
-import React,{useEffect} from 'react'
-import logo from './logo.svg';
+import React,{useEffect, useState} from 'react'
 import './App.css';
+import * as S from './styled/App'
 
 function App() {
 
+  const [item, setItem] = useState([]);
+
+  let ws = new WebSocket("ws://localhost:1234/ws");
+
   useEffect(()=>{
-    let ws = new WebSocket("ws://localhost:1234/ws");
-    ws.onopen = () => {
+      ws.onopen = () => {
       console.log("connected!");
     };
   },[])
 
+  const sendMessage = () => {  // 화살표함수로 만들것!!
+    ws.send("hello this is client Message");  // 서버로 메세지 보내는건 send
+    ws.onmessage = (evt) => {
+      console.log(evt);
+      console.log(evt.data);
+    };
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <header className="App-header">
+      <ul>
+        {item.map(
+          message => {
+            return(
+              <S.Chat>{message}</S.Chat>   
+            )
+          })
+        }
+      </ul>
+      <button onClick={() => sendMessage()}>메세지 보내기</button>
+    </header>
+  </div>
   );
 }
 
