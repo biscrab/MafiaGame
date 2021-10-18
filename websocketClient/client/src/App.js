@@ -1,6 +1,7 @@
 import React,{useEffect, useState} from 'react'
-import { Socket } from 'socket.io-client';
+import io from 'socket.io-client';
 import * as S from './styled/App'
+import './App.css'
 
 function App() {
 
@@ -8,6 +9,7 @@ function App() {
   const [comment, setComment] = useState({name: "", contents: ""})
 
   let ws = new WebSocket("ws://localhost:1234/ws");
+  let socket = io("http://localhost:1234");
 
   useEffect(()=>{
       ws.onopen = () => {
@@ -16,10 +18,11 @@ function App() {
   },[])
 
   const sendMessage = () => {  // 화살표함수로 만들것!!
-    ws.send("message", comment);  // 서버로 메세지 보내는건 send
-    ws.onmessage = (evt) => {
-      console.log(evt);
-    };
+    if(comment.contents&&comment.name){
+      console.log(comment.contents);
+      ws.send(comment.contents, setComment({...comment, contents:""}))
+      document.body.scrollTop = document.body.scrollHeight;
+    }
   };
 
   const onChange = (e) => {
@@ -27,13 +30,17 @@ function App() {
     setComment({...comment, [name]: value})
   }
 
+  socket.on("message", (message) =>{
+    setItem([...item, message]);
+  });
+
   return (
     <>
       <ul>
         {item.map(
           message => {
             return(
-              <S.Chat>{message}</S.Chat>   
+              <p>{message}</p>   
             )
           })
         }
@@ -41,6 +48,7 @@ function App() {
       <input name="name" onChange={(e)=>onChange(e)} value={comment.name}/>
       <input name="contents" onChange={(e)=>onChange(e)} value={comment.contents}/>
       <button onClick={() => sendMessage()}>메세지 보내기</button>
+      <button onClick={()=>console.log(item)}>item</button>
   </>
   );
 }
