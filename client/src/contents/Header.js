@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import * as S from '../styled/App'
+import axios from 'axios'
 
 const Header = () => {
 
@@ -12,7 +13,8 @@ const Header = () => {
         const login = () => {
             let test = Test();
             if(test){
-                alert("1");
+                axios.get('http://127.0.0.1:1234/login')
+                    .then(res => console.log(res))
             }
         }
     
@@ -49,7 +51,7 @@ const Header = () => {
         <>
         <S.Header>
             <h3>마피아</h3>
-            <h3 onClick={()=>setLogin(true)}>로그인/회원가입</h3>
+            <span onClick={()=>setLogin(true)}>로그인/회원가입</span>
         </S.Header>
         {onlogin ?
             <LoginBorder />

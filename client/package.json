@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.23.0",
     "cors": "^2.8.5",
+    "express": "^4.17.1",
     "http-proxy-middleware": "^0.19.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -18,9 +19,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "npm-run-all --parallel start:**",
-    "start:client": "react-scripts start",
-    "start:server": "node ../server/app.js",
+    "start": "react-scripts start && node ../server/app.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

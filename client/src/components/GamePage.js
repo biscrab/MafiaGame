@@ -1,7 +1,6 @@
 import React,{useEffect, useState} from 'react'
 import io from 'socket.io-client';
 import * as S from '../styled/App'
-import '../App.css'
 const ENDPOINT = 'http://localhost:1234'
 let socket
 
@@ -32,7 +31,7 @@ const GamePage = () => {
   });
 
   return (
-    <>
+    <S.Game>
       <ul>
         {item.map(
           message => {
@@ -43,10 +42,10 @@ const GamePage = () => {
         }
       </ul>
       <S.IDiv>
-        <input onChange={(e)=>setComment(e.target.value)} value={comment}/>
-        <button onClick={() => sendMessage()}>메세지 보내기</button>
+        <S.Textarea onChange={(e)=>setComment(e.target.value)} value={comment}/>
+        <S.CButton onClick={() => sendMessage()}>메세지 보내기</S.CButton>
       </S.IDiv>
-  </>
+  </S.Game>
   );
 }
 

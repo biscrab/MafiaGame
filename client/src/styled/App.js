@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const Header = styled.nav`
     background-color: blueviolet;
     position: fixed;
+    top: 0;
     height: 50px;
     width: 91%;
     display: flex;
@@ -15,25 +16,51 @@ export const Header = styled.nav`
 export const Chat = styled.div`
     background-color: blueviolet;
     color: white;
-    border-radius: 5%;
+    border-radius: 5px;
     text-align: center;
+`
+
+export const Game = styled.body`
 `
 
 export const IDiv = styled.div`
     background-color: white;
     position: fixed;
     width: 100%;
-    height: 70px;
+    height: 80px;
     bottom: 0;
+    display: flex;
+    padding: 2%;
+    padding-bottom: 50px;
+`
+
+export const Textarea = styled.textarea`
+    resize: none;
+    width: 84%;
+    outline: 0;
+    font-size: 16px;
+    border: 1px solid gray;
+    padding: 1% 1%;
+`
+
+export const CButton = styled.button`
+    width: 10%;
+    background-color: blueviolet;
+    outline: 0;
+    border: 0;
+    color: white;
+    font-size: 18px;
 `
 
 export const Background = styled.div`
     background-color: rgba(0, 0, 0, 0.3);
     position: fixed;
+    top: 0;
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
+    z-index: 100;
 `
 export const LoginBorder = styled.div`
     background-color: white;
