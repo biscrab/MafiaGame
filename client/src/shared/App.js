@@ -1,13 +1,16 @@
-import {Route} from 'react-router-dom'
+import {Route, Switch } from 'react-router-dom'
 import * as S from '../styled/App'
 import * as P from '../pages'
+import Header from '../contents/Header'
 
 function App() {
     return(
         <>
-            <S.Header />
-            <Route exact path="/" components={P.Main}></Route>
-            <Route path="/game" components={P.Game}></Route>
+            <Header />
+            <Switch>
+                <Route exact path="/" component={P.Main}></Route>
+                <Route path="/game" component={P.Game}></Route>
+            </Switch>
         </>
     )
 }

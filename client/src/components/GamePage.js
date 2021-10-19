@@ -1,7 +1,7 @@
 import React,{useEffect, useState} from 'react'
 import io from 'socket.io-client';
-import * as S from './styled/App'
-import './App.css'
+import * as S from '../styled/App'
+import '../App.css'
 const ENDPOINT = 'http://localhost:1234'
 let socket
 
