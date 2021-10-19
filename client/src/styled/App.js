@@ -59,11 +59,12 @@ export const LoginInput = styled.input`
 export const LoginButton = styled.button`
     color: white;
     background-color: ${props => props.color};
-    width: 85%;
+    width: 87%;
     margin-bottom: 20px;
     border: 0;
     outline: 0;
-    height: 35px;
+    height: 45px;
+    font-size: 18px;
 `
 
 export const Main = styled.body`
