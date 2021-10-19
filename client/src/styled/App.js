@@ -75,6 +75,19 @@ export const LoginBorder = styled.div`
     align-items: center;
 `
 
+export const createBorder = styled.div`
+    background-color: white;
+    border-radius: 10px;
+    height: 330px;
+    width: 350px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`
+
 export const X = styled.span`
     color: gray;
     height: 0;
@@ -112,16 +125,37 @@ export const LoginButton = styled.button`
 
 export const Main = styled.body`
     display: flex;
-    justify-content: center;
-    padding-top: 70px;
+    position: relative;
+    left: 50%;
+    top: 80px;
+    transform: translateX(-50%);
+    width: 90%;
+    flex-direction: column;
 `
 
 export const Border = styled.div`
     background-color: white;
     border-radius: 20px;
-    height: 500px;
-    width: 90%;
+    height: 450px;
     padding: 20px;
+`
+
+export const BDiv = styled.div`
+    display: flex;
+    justify-content: flex-end;
+`
+
+export const MButton = styled.button`
+    border: 0;
+    outline: 0;
+    height: 60px;
+    width: 200px;
+    position: relative;
+    top: 20px;
+    background-color: blueviolet;
+    border-radius: 5px;
+    color: white;
+    font-size: 18px;
 `
 
 export const RoomCard = styled.div`

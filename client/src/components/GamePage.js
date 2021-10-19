@@ -1,10 +1,14 @@
+import axios from 'axios';
 import React,{useEffect, useState} from 'react'
+import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import * as S from '../styled/App'
 const ENDPOINT = 'http://localhost:1234'
 let socket
 
 const GamePage = () => {
+
+  let params = useParams();
 
   const [item, setItem] = useState([]);
   const [comment, setComment] = useState();
@@ -16,6 +20,8 @@ const GamePage = () => {
       ws.onopen = () => {
       console.log("connected!");
       };
+
+      axios.post('')
   },[])
 
   const sendMessage = () => {  // 화살표함수로 만들것!!
@@ -30,7 +36,12 @@ const GamePage = () => {
     setItem([...item, message]);
   });
 
+  const passwordBorder = () => {
+
+  }
+
   return (
+    <>
     <S.Game>
       <ul>
         {item.map(
@@ -46,6 +57,7 @@ const GamePage = () => {
         <S.CButton onClick={() => sendMessage()}>메세지 보내기</S.CButton>
       </S.IDiv>
   </S.Game>
+  </>
   );
 }
 

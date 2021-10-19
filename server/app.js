@@ -1,11 +1,11 @@
 const express = require('express');
 const app = express();
-/*const bodyParser = require('body-prser')
+const bodyParser = require('body-prser')/*
 app.use(bodyParser.urlencoded({extended: true}));*/
 
 // DB연결
 
-//const mysql = require('mysql');
+const mysql = require('mysql');
 
 /*const db = mysql.createConnection({
     host: "localhost",
@@ -27,6 +27,7 @@ app.get('/login', function(req, res){
     res.json('hello');
 })
 
+/*
 app.post('/signup', function(req, res){
 
 })
@@ -41,7 +42,7 @@ app.delete('/room', function(req, res){
 
 app.post('/kill', function(req, res){
 
-})
+})*/
 
 /*var http = require('http');
 var fs = require('fs');
@@ -62,8 +63,8 @@ app.get('/', function (req, res) {
 
 app.get('/bye', function (req, res) {
     res.send('Bye World!');
-});
-
-app.listen(PORT, function () {
-    console.log('Example app listening on port',PORT);
 });*/
+
+app.listen(1234, function () {
+    console.log('Example app listening on port',1234);
+});
