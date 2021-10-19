@@ -4,10 +4,11 @@ export const Header = styled.nav`
     background-color: blueviolet;
     position: fixed;
     height: 50px;
-    width: 100%;
+    width: 91%;
     display: flex;
     align-items: center;
-    padding-left: 20px;
+    padding: 0px 4.5%;
+    justify-content: space-between;
     color: white;
 `
 
@@ -47,6 +48,18 @@ export const LoginBorder = styled.div`
     align-items: center;
 `
 
+export const X = styled.span`
+    color: gray;
+    height: 0;
+    position: relative;
+    left: 42.5%;
+    top: 2.5%;
+    font-size: 20px;
+    :hover{
+        cursor: pointer;
+    }
+`
+
 export const LoginInput = styled.input`
     outline: 0;
     height: 35px;
@@ -65,6 +78,9 @@ export const LoginButton = styled.button`
     outline: 0;
     height: 45px;
     font-size: 18px;
+    :hover{
+        cursor: pointer;
+    }
 `
 
 export const Main = styled.body`
