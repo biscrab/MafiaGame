@@ -13,13 +13,19 @@ const Header = () => {
         const login = () => {
             let test = Test();
             if(test){
-                axios.get('http://127.0.0.1:1234/login', JSON.stringify(input))
-                    .then(res => console.log(res))
+                axios.post('http://localhost:1234/login', input)
+                    .then(res => alert(res.data))
+                    .catch(error => alert("로그인에 실패했습니다."))
             }
         }
     
         const signUp = () => {
-    
+            let test = Test();
+            if(test){
+                axios.post('http://localhost:1234/signup', input)
+                    .then(res => console.log(res))
+                    .catch(error => alert("회원가입에 실패했습니다."))
+            }
         }
     
         const Test = () => {

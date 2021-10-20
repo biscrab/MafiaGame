@@ -1,6 +1,27 @@
 const express = require('express');
 const app = express();
 app.use(express.json());
+let jwt = require("jsonwebtoken");
+
+// Add headers before the routes are defined
+app.use(function (req, res, next) {
+
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    // Pass to next layer of middleware
+    next();
+});
 
 //const bodyParser = require('body-prser')
 //app.use(bodyParser.urlencoded({extended: true}));
@@ -28,21 +49,28 @@ app.listen(1234, function(){
 });*/
 
 app.post('/login', function(req, res){
-    
-    //const param = [req.body.name, req.body,password];
-    /*
-    db.query(`SELECT * FROM user WHERE name=? and password=?`, param, function(err, rows){
-        app.json("error");
-    })*/
-    res.json(123);
+
+    db.query(`SELECT * FROM user WHERE name=? and password=?`, [req.body.name, req.body.password], function(err, rows){
+        if(err){
+            res.json("error");
+        }
+        else{
+            const name = 1;
+            const password = 1;
+            const token = jwt.sign({name, password},{expiresln:"24h"})
+            res.json(token);
+        }
+    })
 })
 
 app.post('/signup', function(req, res){
     db.query(`INSERT INTO user (name, password) VALUES (?, ?);`, [req.body.name, req.body.password], function(error, results, fields){
         if(error){
-            console.log(error);
+            res.json(error);
         }
-        console.log(results);
+        else{
+            res.json(1);
+        }
     });
     console.log(req.body.password);
 })
