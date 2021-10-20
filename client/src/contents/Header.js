@@ -13,7 +13,7 @@ const Header = () => {
         const login = () => {
             let test = Test();
             if(test){
-                axios.get('http://127.0.0.1:1234/login')
+                axios.get('http://127.0.0.1:1234/login', JSON.stringify(input))
                     .then(res => console.log(res))
             }
         }

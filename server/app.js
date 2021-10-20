@@ -1,19 +1,23 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-prser')/*
-app.use(bodyParser.urlencoded({extended: true}));*/
+app.use(express.json());
+
+//const bodyParser = require('body-prser')
+//app.use(bodyParser.urlencoded({extended: true}));
 
 // DB연결
 
 const mysql = require('mysql');
 
-/*const db = mysql.createConnection({
+const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     port: 3306,
     password: 'dongseopfuck1',
-    database: "mafia"
-})*/
+    database: "sys"
+})
+
+db.connect();
 
 /*const User = require("../models/user");*/
 /*let url =  "mongodb://localhost:27017/dalhav";
@@ -23,15 +27,27 @@ app.listen(1234, function(){
     console.log('server opened');
 });*/
 
-app.get('/login', function(req, res){
-    res.json('hello');
+app.post('/login', function(req, res){
+    
+    //const param = [req.body.name, req.body,password];
+    /*
+    db.query(`SELECT * FROM user WHERE name=? and password=?`, param, function(err, rows){
+        app.json("error");
+    })*/
+    res.json(123);
+})
+
+app.post('/signup', function(req, res){
+    db.query(`INSERT INTO user (name, password) VALUES (?, ?);`, [req.body.name, req.body.password], function(error, results, fields){
+        if(error){
+            console.log(error);
+        }
+        console.log(results);
+    });
+    console.log(req.body.password);
 })
 
 /*
-app.post('/signup', function(req, res){
-
-})
-
 app.post('/room', function(req, res){
 
 })
@@ -66,5 +82,5 @@ app.get('/bye', function (req, res) {
 });*/
 
 app.listen(1234, function () {
-    console.log('Example app listening on port',1234);
+    console.log('Example app listening on port', 1234);
 });

@@ -88,6 +88,19 @@ export const createBorder = styled.div`
     align-items: center;
 `
 
+export const passwordBorder = styled.div`
+    background-color: white;
+    border-radius: 10px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 150px;
+    width: 300px;
+`
+
 export const X = styled.span`
     color: gray;
     height: 0;
