@@ -13,7 +13,6 @@ const Room = ({item}) => {
             </S.Status>
                 <span>{item.tittle}</span>
             </S.CName>
-            <S.CExplane>{item.contents}</S.CExplane>
         </S.RoomCard>
     )
 }   

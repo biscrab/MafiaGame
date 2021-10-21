@@ -2,10 +2,7 @@ import axios from 'axios';
 import React,{useEffect, useState} from 'react'
 import { useParams, useHistory } from 'react-router-dom';
 import io from 'socket.io-client';
-import { on } from 'stream';
 import * as S from '../styled/App'
-const ENDPOINT = 'http://localhost:1234'
-let socket
 
 const GamePage = () => {
 
@@ -16,13 +13,10 @@ const GamePage = () => {
   const [comment, setComment] = useState();
   const [onpassword, setOnpassword] = useState(false);
 
-  let ws = new WebSocket("ws://localhost:1234/ws");
-  socket = io(ENDPOINT);
+  const socket = io("http://localhost:1234/");
 
   useEffect(()=>{
-      ws.onopen = () => {
       console.log("connected!");
-      };
 
       axios.post('http://localhost:1234/enter', params.id)
         .then(response => {
@@ -39,16 +33,13 @@ const GamePage = () => {
   },[])
 
   const sendMessage = () => {  // 화살표함수로 만들것!!
-    if(comment.contents&&comment.name){
+    if(comment){
       console.log(comment.contents);
-      ws.send(comment.contents, setComment({...comment, contents:""}))
+      socket.emit("message", comment);
+      //socket.send(comment.contents, setComment({...comment, contents:""}))
       document.body.scrollTop = document.body.scrollHeight;
     }
   };
-
-  socket.on("message", (message) =>{
-    setItem([...item, message]);
-  });
 
   const PasswordBorder = () => {
     return(

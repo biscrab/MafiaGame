@@ -5,10 +5,10 @@ export const Header = styled.nav`
     position: fixed;
     top: 0;
     height: 50px;
-    width: 91%;
+    width: 90%;
     display: flex;
     align-items: center;
-    padding: 0px 4.5%;
+    padding: 0px 5%;
     justify-content: space-between;
     color: white;
 `
@@ -188,8 +188,4 @@ export const Status = styled.div`
 export const CName = styled.div`
     display: flex;
     align-items: center;
-`
-
-export const CExplane = styled.p`
-    color: gray;
 `

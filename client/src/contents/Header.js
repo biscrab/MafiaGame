@@ -1,8 +1,11 @@
 import React,{useState} from 'react'
 import * as S from '../styled/App'
 import axios from 'axios'
+import { useCookies } from 'react-cookie';
 
 const Header = () => {
+
+    const [cookies, setCookie, removeCookie] = useCookies(['m-token']);
 
     const [onlogin, setLogin] = useState(false);
 
@@ -14,7 +17,10 @@ const Header = () => {
             let test = Test();
             if(test){
                 axios.post('http://localhost:1234/login', input)
-                    .then(res => alert(res.data))
+                    .then(res => {
+                        setCookie('m-token', res.data);
+                        setLogin(false);
+                    })
                     .catch(error => alert("로그인에 실패했습니다."))
             }
         }

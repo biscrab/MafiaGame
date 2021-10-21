@@ -2,6 +2,11 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 let jwt = require("jsonwebtoken");
+const http = require('http').createServer(app);
+const io   = require('socket.io')(http)
+
+var fs = require('fs');
+var server = require('http').createServer();
 
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
@@ -48,36 +53,57 @@ app.listen(1234, function(){
     console.log('server opened');
 });*/
 
+const SECRET_KEY="XOZUhcOIiv7lt6avsdm6D7asdWcRB5dhqX";
+
 app.post('/login', function(req, res){
 
     db.query(`SELECT * FROM user WHERE name=? and password=?`, [req.body.name, req.body.password], function(err, rows){
         if(err){
-            res.json("error");
+            res.status(406);
         }
         else{
-            const name = 1;
-            const password = 1;
-            const token = jwt.sign({name, password},{expiresln:"24h"})
+            const name = rows.name;
+            const password = rows.password;
+            const token = jwt.sign({name: name, password: password}, SECRET_KEY)
             res.json(token);
         }
     })
 })
 
+function check(req) {
+    db.query(`SELECT * FROM user WHERE name=?`, [req.body.name]), function(error, rows){
+        if(rows){
+            return(false);
+        }
+        else{
+            return(true);
+        }
+    }
+}
+
 app.post('/signup', function(req, res){
+    if(check(req)){
     db.query(`INSERT INTO user (name, password) VALUES (?, ?);`, [req.body.name, req.body.password], function(error, results, fields){
         if(error){
             res.json(error);
         }
         else{
-            res.json(1);
+            res.json("성공");
         }
     });
-    console.log(req.body.password);
-})
+    }
+    else{
+        res.json("중복");
+    }
+});    
 
 /*
 app.post('/room', function(req, res){
+    if(req.body.password){
 
+    }else{
+    
+    }
 })
 
 app.delete('/room', function(req, res){
@@ -87,6 +113,14 @@ app.delete('/room', function(req, res){
 app.post('/kill', function(req, res){
 
 })*/
+
+io.on("connection", socket => {
+    console.log(1);
+   socket.on("message", (data) => {
+      console.log(data);
+    });
+});
+
 
 /*var http = require('http');
 var fs = require('fs');
