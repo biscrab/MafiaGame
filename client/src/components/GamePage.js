@@ -1,8 +1,8 @@
 import axios from 'axios';
 import React,{useEffect, useState} from 'react'
 import { useParams, useHistory } from 'react-router-dom';
-import io from 'socket.io-client';
 import * as S from '../styled/App'
+import io from 'socket.io-client'
 
 const GamePage = () => {
 
@@ -13,10 +13,18 @@ const GamePage = () => {
   const [comment, setComment] = useState();
   const [onpassword, setOnpassword] = useState(false);
 
-  const socket = io("http://localhost:1234/");
+  const socket = io.connect('http://localhost:1234');
+
+  /*socket.on("connect", () => {
+    // either with send()
+    socket.send("Hello!");
+  })
+
+  socket.on("message", data => {
+    setItem({...item, data})
+  }) */
 
   useEffect(()=>{
-      console.log("connected!");
 
       axios.post('http://localhost:1234/enter', params.id)
         .then(response => {
@@ -32,9 +40,8 @@ const GamePage = () => {
 
   },[])
 
-  const sendMessage = () => {  // 화살표함수로 만들것!!
+  const sendMessage = () => {
     if(comment){
-      console.log(comment.contents);
       socket.emit("message", comment);
       //socket.send(comment.contents, setComment({...comment, contents:""}))
       document.body.scrollTop = document.body.scrollHeight;
