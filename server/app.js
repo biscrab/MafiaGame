@@ -6,7 +6,11 @@ var fs = require('fs');
 const http = require('http');
 var server = require('http').createServer(app);
 const mysql = require('mysql');
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+    cors: {
+      origin: true,
+      methods: ["GET", "POST"]
+    }});
 
 const db = mysql.createConnection({
     host: "localhost",
@@ -17,10 +21,13 @@ const db = mysql.createConnection({
 })
 
 io.on('connection', function(socket) {
-    console.log("연결")
+    console.log("연결");
+    socket.on("message", (message) => {
+        console.log(message);
+    })
 });
 
-app.listen(1234, function () {
+server.listen(1234, function () {
     console.log('Example app listening on port', 1234);
 });
 

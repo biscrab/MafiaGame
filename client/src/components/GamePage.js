@@ -13,7 +13,8 @@ const GamePage = () => {
   const [comment, setComment] = useState();
   const [onpassword, setOnpassword] = useState(false);
 
-  const socket = io.connect('http://localhost:1234');
+  const socket = io("localhost:1234");
+  socket.on("connect", () => { console.log("connection server"); });
 
   /*socket.on("connect", () => {
     // either with send()
@@ -25,7 +26,6 @@ const GamePage = () => {
   }) */
 
   useEffect(()=>{
-
       axios.post('http://localhost:1234/enter', params.id)
         .then(response => {
           if(response.data.password){
@@ -42,8 +42,7 @@ const GamePage = () => {
 
   const sendMessage = () => {
     if(comment){
-      socket.emit("message", comment);
-      //socket.send(comment.contents, setComment({...comment, contents:""}))
+      io("localhost:1234").emit("message", comment);
       document.body.scrollTop = document.body.scrollHeight;
     }
   };
