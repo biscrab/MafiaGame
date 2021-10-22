@@ -125,7 +125,7 @@ app.post('/room', function(req, res){
             res.json("error");
         }
         else{
-            db.query('CREATE TABLE ? ( status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);', [member]);
+            db.query('CREATE TABLE ? ( status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);', [member]);
             db.query('CREATE TABLE ? (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL);', [chat])
             db.query('INSERT INTO ? (name) VALUES (?)', [member, req.body.name])
             db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [req.body.name]);
@@ -183,7 +183,16 @@ app.post('/enter', function(req, res){
 })
 
 app.post('/leave', function(req, res){
-
+    let member = `${req.body.name}_member`;
+    db.connect();
+    db.query('DELETE FROM ? WHERE name = ?', [member, req.body.name])
+    db.query('SELECT COUNT(*) from ?', [member], function(err, rows){
+        let r = rows.data;
+        if(r === 0){
+            db.query('DROP TABLE ?', [member])
+        }
+    })
+    
 })
 
 app.delete('/room', function(req, res){

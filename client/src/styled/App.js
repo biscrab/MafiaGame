@@ -151,6 +151,8 @@ export const Border = styled.div`
     border-radius: 20px;
     height: 450px;
     padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
 `
 
 export const BDiv = styled.div`
@@ -175,6 +177,7 @@ export const RoomCard = styled.div`
     border-radius: 5px;
     height: 25%;
     width: 25%;
+    margin: 1%;
     box-shadow: 0px 0px 10px 3px rgb(230,230,230);
     background-color: white;
     padding: 10px;
