@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as S from '../styled/App'
 import Room from '../contents/Room'
 import axios from 'axios'
@@ -11,6 +11,13 @@ const MainPage = () => {
     const [rlist, setRlist] = useState([]);
     const [oncreate, setOncreate] = useState(false);
     const [room, setRoom] = useState({password: "", admin: localStorage.name, name: ""})
+
+    useEffect(()=>{
+        axios.get('http://localhost:1234/room')
+            .then(response => {
+                setRlist([...response]);
+            })
+    },[])
 
     const createRoom = () => {
         axios.post('http://localhost:1234/room', room)

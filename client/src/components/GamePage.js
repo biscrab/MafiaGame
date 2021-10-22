@@ -10,8 +10,10 @@ const GamePage = () => {
   let history = useHistory();
 
   const [item, setItem] = useState([]);
-  const [comment, setComment] = useState();
-  const [onpassword, setOnpassword] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [messange, setMessange] = useState();
+  const [ipassword, setIpassword] = useState();
+  const [onpassword, setOnpassword] = useState();
 
   const socket = io("localhost:1234");
   socket.on("connect", () => { console.log("connection server"); });
@@ -31,18 +33,19 @@ const GamePage = () => {
           if(response.data.password){
             setOnpassword(response.data.password);
           }
+          else{
+            socket.join(params.id);
+          }
         })
         .catch(error => {
-          /*
           history.push("/");
-          alert("존재하지 않는 방 입니다.");*/
+          alert("존재하지 않는 방 입니다.");
         })
-
   },[])
 
   const sendMessage = () => {
-    if(comment){
-      io("localhost:1234").emit("message", comment);
+    if(messange){
+      socket.to(params.id).emit("message", messange);
       document.body.scrollTop = document.body.scrollHeight;
     }
   };
@@ -53,7 +56,7 @@ const GamePage = () => {
       <S.passwordBorder>
         <S.X>X</S.X>
         <h2>비밀번호</h2>
-        <S.LoginInput />
+        <S.LoginInput onChange={(e)=>setIpassword(e.target.value)} value={ipassword}/>
         <S.LoginButton>입력</S.LoginButton>
       </S.passwordBorder>
     </S.Background>
@@ -73,7 +76,7 @@ const GamePage = () => {
         }
       </ul>
       <S.IDiv>
-        <S.Textarea onChange={(e)=>setComment(e.target.value)} value={comment}/>
+        <S.Textarea onChange={(e)=>setMessange(e.target.value)} value={messange}/>
         <S.CButton onClick={() => sendMessage()}>메세지 보내기</S.CButton>
       </S.IDiv>
   </S.Game>
