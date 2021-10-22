@@ -4,14 +4,13 @@ import * as S from '../styled/App'
 const Room = ({item}) => {
 
     let history = useHistory();
-
     return(
-        <S.RoomCard onClick={()=>history.push(`/game/${item.id}`)}>
+        <S.RoomCard onClick={()=>history.push(`/game/${item.name}`)}>
             <S.CName>
-            <S.Status color={item.status === "open" ? "green" : "red"}>
+            <S.Status color={item.status === 0 ? "green" : "red"}>
                 <i class="fas fa-circle fa-xs"></i>
             </S.Status>
-                <span>{item.tittle}</span>
+                <span>{item.name} (/{item.max})</span>
             </S.CName>
         </S.RoomCard>
     )
@@ -19,11 +18,9 @@ const Room = ({item}) => {
 
 const List = ({lists}) => {
    const itemList = lists.map(
-        item => {
-            return(
-                <Room item={item}/>
-            )
-        }
+        item => (
+            <Room item={item}/>
+        )
     )
     return itemList
 }

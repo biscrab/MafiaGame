@@ -115,29 +115,35 @@ app.post('/signup', function(req, res){
     db.end();
 });   
 
+
 app.post('/room', function(req, res){
+    let member = `${req.body.name}_member`;
+    let chat = `${req.body.name}_chat`;
+    db.connect();
     db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, req.body.max], function(error, results, fields){
         if(error){
             res.json("error");
         }
         else{
-            db.query('CREATE TABLE `sys`.`?_member` ( `status` INT NULL DEFAULT 1, `name` VARCHAR(45) NOT NULL, `job` INT NULL DEFAULT 0, `id` INT NULL DEFAULT 0, PRIMARY KEY (`name`),  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE,  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);',[req.body.name]);
-            db.query('INSERT INTO ?_member (name) (n')
-            db.query('UPDATE sys.user SET ingame = 1 WHERE (name = ?);', [req.body.name]);
+            db.query('CREATE TABLE ? ( status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);', [member]);
+            db.query('CREATE TABLE ? (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL);', [chat])
+            db.query('INSERT INTO ? (name) VALUES (?)', [member, req.body.name])
+            db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [req.body.name]);
             res.json("성공");
         }
     })
+    db.end();
 })
 
 app.get('/room', function(req, res){
-    db.query('SELECT * FROM room'), function(err, rows){
+    db.query('SELECT * FROM room', function(err, rows){
         if(err){
             res.json("error");
         }  
         else{
             res.json(rows);
         }
-    }
+    })
 })
 
 app.post('/enter', function(req, res){
@@ -188,10 +194,20 @@ app.post('/kill', function(req, res){
 
 })
 
-app.post('/')
+app.post('/detect', function(req, res){
+    db.query('SELECT job from ?_member WHERE (name = ?)', [req.body.id, req.body.name], function(err, rows){
+
+    })
+})
 
 app.get('/test', function(req, res){
     db.query('SELECT count(*) from user', [req.body.name], function(err, rows){
+        res.json(rows);
+    })
+})
+
+app.get('/member', function(req, res){
+    db.query('SELECT count(*) from ?_member', [req.body], function(err, rows){
         res.json(rows);
     })
 })

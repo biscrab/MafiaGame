@@ -15,9 +15,9 @@ const MainPage = () => {
     useEffect(()=>{
         axios.get('http://localhost:1234/room')
             .then(response => {
-                setRlist([...response]);
+                setRlist([...response.data]);
             })
-    },[])
+    })
 
     const createRoom = () => {
         axios.post('http://localhost:1234/room', room)
@@ -49,7 +49,11 @@ const MainPage = () => {
         <>
         <S.Main>
             <S.Border>
+                {rlist ?
                 <Room lists={rlist}/>
+                :
+                <></>
+                }
             </S.Border>
             <S.BDiv>
                 <S.MButton onClick={()=>setOncreate(true)}>
