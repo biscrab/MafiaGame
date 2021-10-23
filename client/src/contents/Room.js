@@ -1,7 +1,17 @@
 import { useHistory } from 'react-router-dom'
 import * as S from '../styled/App'
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 const Room = ({item}) => {
+
+    const [member, setMember] = useState();
+
+    /*
+    useEffect(()=>{
+        axios.get('http://localhost:1234/test', item.name)
+            .then(res => console.log([...res.data]));
+    })**/
 
     let history = useHistory();
     return(
