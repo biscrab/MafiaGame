@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 let jwt = require("jsonwebtoken");
+const jwt_decode = require("jwt-decode");
 var fs = require('fs');
 const http = require('http');
 var server = require('http').createServer(app);
@@ -71,6 +72,20 @@ app.post('/login', function(req, res){
     db.end();
 })
 
+function getCookie(cName) {
+    cName = cName + '=';
+    var cookieData = document.cookie;
+    var start = cookieData.indexOf(cName);
+    var cValue = '';
+    if(start != -1){
+    start += cName.length;
+    var end = cookieData.indexOf(';', start);
+    if(end == -1)end = cookieData.length;
+    cValue = cookieData.substring(start, end);
+    }
+    return unescape(cValue);
+}
+
 function check(req) {
     db.connect();
     db.query(`SELECT * FROM user WHERE name=?`, [req.body.name]), function(error, rows){
@@ -98,7 +113,14 @@ function checkDeath(id, name){
 }
 
 function checkLogin(){
+    let token = jwt_decode(getCookie('m-token'), SECRET_KEY);
+    return token
+}
 
+function getJob(req){
+    db.query(`SELECT job from ${req.bod.id}_member WHERE (name = ${req.body.name})`, function(err, rows){
+        return(rows);
+    })
 }
 
 app.post('/signup', function(req, res){
@@ -201,13 +223,24 @@ app.delete('/room', function(req, res){
 })
 
 app.post('/kill', function(req, res){
-
+    let job = getJob(req);
+        if(job === 1){
+            db.query(``)
+        }
 })
 
 app.post('/detect', function(req, res){
-    db.query('SELECT job from ?_member WHERE (name = ?)', [req.body.id, req.body.name], function(err, rows){
+    let job = getJob(req);
+        if(job === 2){
 
-    })
+        }
+})
+
+app.post('/heal', function(req, res){
+    let job = getJob(req);
+        if(job === 3){
+
+        }
 })
 
 app.get('/test', function(req, res){
@@ -227,4 +260,8 @@ app.get('/test2', function(req, res){
     db.query(`CREATE TABLE ${req.body.name}_member (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
     res.json("1");
     db.end();
+})
+
+app.get('/test3', function(req, res){
+    res.json(1)
 })

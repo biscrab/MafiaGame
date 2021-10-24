@@ -17,6 +17,7 @@ const GamePage = () => {
 
   const socket = io("localhost:1234");
   socket.on("connect", () => { console.log("connection server"); });
+  socket.on("disconnect", () => {console.log("discount")});
 
   /*socket.on("connect", () => {
     // either with send()
@@ -28,6 +29,7 @@ const GamePage = () => {
   }) */
 
   useEffect(()=>{
+    /*
       axios.post('http://localhost:1234/enter', params.id)
         .then(response => {
           if(response.data.password){
@@ -40,7 +42,7 @@ const GamePage = () => {
         .catch(error => {
           history.push("/");
           alert("존재하지 않는 방 입니다.");
-        })
+        })*/
   },[])
 
   const sendMessage = () => {
