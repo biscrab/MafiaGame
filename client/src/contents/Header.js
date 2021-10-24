@@ -50,8 +50,8 @@ const Header = () => {
                 <S.LoginBorder>
                     <S.X onClick={()=>setLogin(false)}>X</S.X>
                     <h1>로그인</h1>
-                    <S.LoginInput value={input.name} onChange={(e)=>setInput({...input, name: e.target.value})}></S.LoginInput>
-                    <S.LoginInput value={input.password} onChange={(e)=>setInput({...input, password: e.target.value})} type="password"></S.LoginInput>
+                    <S.LoginInput onChange={(e)=>setInput({...input, name: e.target.value})} value={input.name}></S.LoginInput>
+                    <S.LoginInput onChange={(e)=>setInput({...input, password: e.target.value})} type="password" value={input.password}></S.LoginInput>
                     <S.LoginButton color="royalblue" onClick={()=>login()}>로그인</S.LoginButton>
                     <S.LoginButton color="blueviolet" onClick={()=>signUp()}>회원가입</S.LoginButton>
                 </S.LoginBorder>

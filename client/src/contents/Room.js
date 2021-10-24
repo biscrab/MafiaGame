@@ -2,18 +2,17 @@ import { useHistory } from 'react-router-dom'
 import * as S from '../styled/App'
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { useAsync } from "react-async";
 
 const Room = ({item}) => {
 
-    const [member, setMember] = useState();
-
     /*
-    useEffect(()=>{
-        axios.get('http://localhost:1234/test', item.name)
-            .then(res => console.log([...res.data]));
-    })**/
+    const countMember = async() => {
+        var member = await axios.get('http://localhost:1234/test', item.name);
+    }*/
 
     let history = useHistory();
+
     return(
         <S.RoomCard onClick={()=>history.push(`/game/${item.name}`)}>
             <S.CName>

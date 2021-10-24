@@ -33,14 +33,14 @@ const MainPage = () => {
     const CreateBorder = () => {
         return(
         <S.Background>
-            <S.createBorder>
+            <S.CreateBorder>
                 <S.X onClick={()=>setOncreate(false)}>X</S.X>
                 <h2>방 만들기</h2>
                 <S.LoginInput value={room.name} placeholder="방이름" onChange={(e)=>setRoom({...room, name: e.target.value})}></S.LoginInput>
                 <S.LoginInput value={room.max} placeholder="인원수 제한" onChange={(e)=>setMax(e)}></S.LoginInput>
                 <S.LoginInput value={room.password} placeholder="비밀번호" onChange={(e)=>setRoom({...room, password: e.target.value})}></S.LoginInput>
-                <S.LoginButton color="blueviolet" onClick={()=>createRoom}>방 만들기</S.LoginButton>
-            </S.createBorder>
+                <S.LoginButton color="blueviolet" onClick={()=>createRoom()}>방 만들기</S.LoginButton>
+            </S.CreateBorder>
         </S.Background>
         )
     }

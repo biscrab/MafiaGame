@@ -75,7 +75,7 @@ export const LoginBorder = styled.div`
     align-items: center;
 `
 
-export const createBorder = styled.div`
+export const CreateBorder = styled.div`
     background-color: white;
     border-radius: 10px;
     height: 330px;

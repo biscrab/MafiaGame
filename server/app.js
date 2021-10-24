@@ -97,6 +97,10 @@ function checkDeath(id, name){
     db.end();
 }
 
+function checkLogin(){
+
+}
+
 app.post('/signup', function(req, res){
     db.connect();
     if(check(req)){
@@ -120,18 +124,12 @@ app.post('/room', function(req, res){
     let member = `${req.body.name}_member`;
     let chat = `${req.body.name}_chat`;
     db.connect();
-    db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, req.body.max], function(error, results, fields){
-        if(error){
-            res.json("error");
-        }
-        else{
-            db.query('CREATE TABLE ? ( status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);', [member]);
-            db.query('CREATE TABLE ? (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL);', [chat])
-            db.query('INSERT INTO ? (name) VALUES (?)', [member, req.body.name])
-            db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [req.body.name]);
-            res.json("성공");
-        }
-    })
+    db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, req.body.max])
+    db.query(`CREATE TABLE ${member} (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
+    db.query(`CREATE TABLE ${chat} (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL);`)
+    db.query(`INSERT INTO ${member} (name) VALUES (${req.body.user})`)
+    db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [req.body.user]);
+    res.json("성공");
     db.end();
 })
 
@@ -184,12 +182,15 @@ app.post('/enter', function(req, res){
 
 app.post('/leave', function(req, res){
     let member = `${req.body.name}_member`;
+    let chat = `${req.body.name}_chat`;
     db.connect();
     db.query('DELETE FROM ? WHERE name = ?', [member, req.body.name])
     db.query('SELECT COUNT(*) from ?', [member], function(err, rows){
-        let r = rows.data;
+        let r = (Number(Object.keys(rows)[0]));
         if(r === 0){
+            db.query('DROP TABLE ?', [req.body.name])
             db.query('DROP TABLE ?', [member])
+            db.query('DROP TABLE ?', [chat])
         }
     })
     
@@ -211,12 +212,19 @@ app.post('/detect', function(req, res){
 
 app.get('/test', function(req, res){
     db.query('SELECT count(*) from user', [req.body.name], function(err, rows){
-        res.json(rows);
+        res.json(Number(Object.keys(rows)[0]));
     })
 })
 
 app.get('/member', function(req, res){
-    db.query('SELECT count(*) from ?_member', [req.body], function(err, rows){
-        res.json(rows);
+    db.query(`SELECT count(*) from ${req.body}_member`, function(err, rows){
+        res.json(Number(Object.keys(rows)[0]))
     })
+})
+
+app.get('/test2', function(req, res){
+    db.connect();
+    db.query(`CREATE TABLE ${req.body.name}_member (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
+    res.json("1");
+    db.end();
 })
