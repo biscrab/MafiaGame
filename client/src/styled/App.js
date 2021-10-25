@@ -24,6 +24,23 @@ export const Header = styled.nav`
     }
 `
 
+export const ChatDiv = styled.div`
+    display: flex;
+    justify-content: flex-start;
+`
+
+export const MyChatDiv = styled.div`
+    display: flex;
+    justify-content: flex-end;
+`
+
+export const MyChat = styled.div`
+    background-color: blueviolet;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+`
+
 export const Chat = styled.div`
     background-color: blueviolet;
     color: white;
@@ -73,6 +90,7 @@ export const Background = styled.div`
     align-items: center;
     z-index: 100;
 `
+
 export const LoginBorder = styled.div`
     background-color: white;
     border-radius: 10px;
@@ -84,6 +102,47 @@ export const LoginBorder = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+`
+
+export const SelectBorder = styled.div`
+    background-color: white;
+    border-radius: 10px;
+    height: 450px;
+    width: 400px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 10px;
+`
+
+export const Select = styled.div`
+    box-shadow: 0px 0px 3px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: ${props => props.shadow};
+    width: 100px;
+    height: 140px;
+    padding: 10px;
+    border-radius: 3%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 10px;
+
+    :hover{
+        box-shadow: 0px 0px 3px 3px rgba(100, 0, 255, 0.3);
+    }
+`
+
+export const SImg = styled.img`
+    width: 100px;
+    height: 100px;
+`
+
+export const SSpan = styled.span`
+    padding-top: 10px;
 `
 
 export const CreateBorder = styled.div`

@@ -1,9 +1,14 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import * as S from '../styled/App'
 import axios from 'axios'
 import { useCookies } from 'react-cookie';
 
 const Header = () => {
+
+    const getName = async() => {
+        const name = await axios.get("http://localhost:1234/user", )
+        return name
+    }
 
     const [cookies, setCookie, removeCookie] = useCookies(['m-token']);
 

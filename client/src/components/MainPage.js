@@ -26,8 +26,7 @@ const MainPage = () => {
     }
 
     const setMax = (e) => {
-        setRoom({...room, price: e.target.value})
-        setRoom({...room, price: room.price.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')})
+        setRoom({...room, price: e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')})
     }
 
     const onChange = (e) => {

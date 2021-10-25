@@ -14,19 +14,18 @@ const GamePage = () => {
   const [messange, setMessange] = useState();
   const [ipassword, setIpassword] = useState();
   const [onpassword, setOnpassword] = useState();
+  const [user, setUser] = useState([{name: "1"}]);
+  const [onselect, setOnselect] = useState(false);
+  const [selected, setSelected] = useState()
 
   const socket = io("localhost:1234");
-  socket.on("connect", () => { console.log("connection server"); });
-  socket.on("disconnect", () => {console.log("discount")});
+  socket.on("connection", (arg) => { 
+    console.log(arg); 
+  });
 
-  /*socket.on("connect", () => {
-    // either with send()
-    socket.send("Hello!");
-  })
-
-  socket.on("message", data => {
-    setItem({...item, data})
-  }) */
+  socket.on("disconnect", () => {
+    console.log("discount")
+  });
 
   useEffect(()=>{
     /*
@@ -43,11 +42,12 @@ const GamePage = () => {
           history.push("/");
           alert("존재하지 않는 방 입니다.");
         })*/
+        socket.emit("join", params.id)
   },[])
 
   const sendMessage = () => {
     if(messange){
-      socket.to(params.id).emit("message", messange);
+      socket.emit("message", messange);
       document.body.scrollTop = document.body.scrollHeight;
     }
   };
@@ -63,6 +63,23 @@ const GamePage = () => {
       </S.passwordBorder>
     </S.Background>
     );
+  }
+  
+  const SelectBorder = () => {
+    return(
+      <S.Background>
+        <S.SelectBorder>
+        {user.map(
+          i => (
+            <S.Select onClick={()=>setSelected(item)} shadow={selected === item ? "0px 0px 0px 3px rgba(100, 0, 255)": ""}>
+              <S.SImg src={"http://cdn.onlinewebfonts.com/svg/img_275609.png"}></S.SImg>
+              <S.SSpan>{i.name}</S.SSpan>
+            </S.Select>
+          )
+        )}
+        </S.SelectBorder>
+      </S.Background>
+    )
   }
 
   return (
@@ -87,6 +104,11 @@ const GamePage = () => {
     <PasswordBorder />
     :
     <></>
+    }
+    {onselect ?
+      <SelectBorder />
+      : 
+      <></>
     }
   </>
   );

@@ -9,8 +9,8 @@ var server = require('http').createServer(app);
 const mysql = require('mysql');
 const io = require('socket.io')(server, {
     cors: {
-      origin: true,
-      methods: ["GET", "POST"]
+      origin: "*",
+      methods: ["GET", "POST"],
     }});
 
 const db = mysql.createConnection({
@@ -22,11 +22,16 @@ const db = mysql.createConnection({
 })
 
 io.on('connection', function(socket) {
-    console.log("연결");
-    socket.on("message", (message) => {
+    socket.emit("연결");
+    socket.on("join", function(data) {
+        socket.join(data);
+        //socket.set('room', data);
+    }) 
+    socket.on("message", (data) => {
+        socket.get(room).emit("message", data);
         let life = checkDeath(message.id, message.name);
         if(life === 1){
-            console.log(message.contents);
+            db.query(`INSERT INTO ${data.name}_chat (name, contents) VALUE (${data.user}, ${data.contents})`)
         }
     })
 });
@@ -63,9 +68,9 @@ app.post('/login', function(req, res){
             res.status(406);
         }
         else{
-            const name = rows.name;
-            const password = rows.password;
-            const token = jwt.sign({name: name, password: password}, SECRET_KEY)
+            const name = rows[0].name;
+            const password = rows[0].password;
+            const token = jwt.sign({name: name, password: password}, "apple")
             res.json(token);
         }
     })
@@ -99,13 +104,15 @@ function checkDeath(id, name){
 }
 
 function checkLogin(token){
-    jwt.verify(token, SECRET_KEY, (err, encode) => {
-        if(encode){
-            return encode
-        }
-        else{
-            return "error"
-        }
+    jwt.verify(token, 'apple', (err, encode) => {
+        db.query(`SELECT * from uesr WHERE name=${encode.name} and password=${encode.password}`, function(err, rows){
+            if(rows){
+                return true;
+            }
+            else{
+                return false;
+            }
+        })
     })
 }
 
@@ -137,14 +144,16 @@ app.post('/signup', function(req, res){
 app.post('/room', function(req, res){
     let member = `${req.body.name}_member`;
     let chat = `${req.body.name}_chat`;
-    db.connect();
-    db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, req.body.max])
-    db.query(`CREATE TABLE ${member} (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
-    db.query(`CREATE TABLE ${chat} (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL);`)
-    db.query(`INSERT INTO ${member} (name) VALUES (${req.body.user})`)
-    db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [req.body.user]);
-    res.json("성공");
-    db.end();
+    if(checkLogin(req.headers.authorization)){
+        db.connect();
+            db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, req.body.max])
+            db.query(`CREATE TABLE ${member} (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
+            db.query(`CREATE TABLE ${chat} (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL);`)
+            db.query(`INSERT INTO ${member} (name) VALUES (${req.body.user})`)
+            db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [req.body.user]);
+            res.json("성공");
+        db.end();
+    }
 })
 
 app.get('/room', function(req, res){
@@ -164,6 +173,7 @@ app.post('/enter', function(req, res){
     let status;
     let ingame;
 
+    if(checkLogin(req.headers.authorization)){
     db.query('SELECT max from room WHERE (name = ?)', [req.body.name], function(err, rows){
         max = rows;
     })
@@ -191,6 +201,7 @@ app.post('/enter', function(req, res){
             res.json("이미 게임 중 입니다.");
         }
     })
+    }
     }
 })
 
@@ -234,6 +245,7 @@ app.delete('/room', function(req, res){
 })
 
 app.post('/kill', function(req, res){
+    if(checkLogin(req.headers.authorization)){
     let job = getJob(req);
         if(job === 1){
             if(checkDeath(req.body.user)){
@@ -245,16 +257,20 @@ app.post('/kill', function(req, res){
                 })
             }
         }
+    }
 })
 
 app.post('/detect', function(req, res){
+    if(checkLogin(req.headers.authorization)){
     let job = getJob(req);
         if(job === 2){
             db.query(`UPDATE ${req.body.name}`)
         }
+    }
 })
 
 app.post('/heal', function(req, res){
+    if(checkLogin(req.headers.authorization)){
     let job = getJob(req);
         if(job === 3){
             if(checkDeath(req.body.user)){
@@ -266,6 +282,7 @@ app.post('/heal', function(req, res){
                 })
             }
         }
+    }
 })
 
 app.get('/test', function(req, res){
@@ -295,13 +312,13 @@ app.get('/test2', function(req, res){
     db.end();
 })
 
-app.get('/test3', function(req, res){
-    jwt.verify(req.body.token, SECRET_KEY, (err, encode) => {
+app.get('/user', function(req, res){
+    jwt.verify(req.headers.authorization, 'apple', (err, encode) => {
         if(err){
             res.json(err)
         }
         else{
-            res.json(encode)
+            res.json(encode.name)
         }
     })
 })
