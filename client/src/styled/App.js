@@ -11,6 +11,17 @@ export const Header = styled.nav`
     padding: 0px 5%;
     justify-content: space-between;
     color: white;
+    h3{
+        :hover{
+            cursor: pointer;
+        }
+    }
+
+    span{
+        :hover{
+            cursor: pointer;
+        } 
+    }
 `
 
 export const Chat = styled.div`

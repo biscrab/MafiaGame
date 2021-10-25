@@ -72,20 +72,6 @@ app.post('/login', function(req, res){
     db.end();
 })
 
-function getCookie(cName) {
-    cName = cName + '=';
-    var cookieData = document.cookie;
-    var start = cookieData.indexOf(cName);
-    var cValue = '';
-    if(start != -1){
-    start += cName.length;
-    var end = cookieData.indexOf(';', start);
-    if(end == -1)end = cookieData.length;
-    cValue = cookieData.substring(start, end);
-    }
-    return unescape(cValue);
-}
-
 function check(req) {
     db.connect();
     db.query(`SELECT * FROM user WHERE name=?`, [req.body.name]), function(error, rows){
@@ -112,9 +98,15 @@ function checkDeath(id, name){
     db.end();
 }
 
-function checkLogin(){
-    let token = jwt_decode(getCookie('m-token'), SECRET_KEY);
-    return token
+function checkLogin(token){
+    jwt.verify(token, SECRET_KEY, (err, encode) => {
+        if(encode){
+            return encode
+        }
+        else{
+            return "error"
+        }
+    })
 }
 
 function getJob(req){
@@ -205,41 +197,74 @@ app.post('/enter', function(req, res){
 app.post('/leave', function(req, res){
     let member = `${req.body.name}_member`;
     let chat = `${req.body.name}_chat`;
+    let r;
     db.connect();
-    db.query('DELETE FROM ? WHERE name = ?', [member, req.body.name])
     db.query('SELECT COUNT(*) from ?', [member], function(err, rows){
-        let r = (Number(Object.keys(rows)[0]));
-        if(r === 0){
+        r = (Number(Object.keys(rows)[0]));
+        if(r === 1){
+            db.query('DROP TABLE ?', [req.body.name])
+            db.query('DROP TABLE ?', [member])
+            db.query('DROP TABLE ?', [chat])
+        }
+        else{
+            db.query(`SELECT admin from ${req.body.name}_member WHERE (name = ${req.body.user})`, function(err, rows){
+                r = (Number(Object.keys(rows)[0]))
+                if(r === 1){
+                    db.query(`SELECT id FROM ${req.body.name}_member ORDER BY id`, function(err, rows){
+                        const first = rows;
+                        db.query(`UPDATE ${req.body.name}_member SET admin = 1 WHERE (id = first)`);
+                    })
+                }
+            })
+        }
+        db.query('DELETE FROM ? WHERE name = ?', [member, req.body.name])
+    }) 
+})
+
+app.delete('/room', function(req, res){
+    let member = `${req.body.name}_member`;
+    let chat = `${req.body.name}_chat`;
+    db.query(`SELECT admin from ${member} WHERE (name = ${req.body.user})`, function(err, rows){
+        if(rows){
             db.query('DROP TABLE ?', [req.body.name])
             db.query('DROP TABLE ?', [member])
             db.query('DROP TABLE ?', [chat])
         }
     })
-    
-})
-
-app.delete('/room', function(req, res){
-
 })
 
 app.post('/kill', function(req, res){
     let job = getJob(req);
         if(job === 1){
-            db.query(``)
+            if(checkDeath(req.body.user)){
+                db.query(`SELECT status from ${req.body.name}_member WHERE (name = ${req.body.user})`, function(err, rows){
+                    const status = Number(Object.keys.rows[0]);
+                    if(status === 1){
+                        db.query(`UPDATE ${req.body.name}_member SET status = 0 WHERE (name = ${req.body.user})`)
+                    } 
+                })
+            }
         }
 })
 
 app.post('/detect', function(req, res){
     let job = getJob(req);
         if(job === 2){
-
+            db.query(`UPDATE ${req.body.name}`)
         }
 })
 
 app.post('/heal', function(req, res){
     let job = getJob(req);
         if(job === 3){
-
+            if(checkDeath(req.body.user)){
+                db.query(`SELECT status from ${req.body.name}_member WHERE (name = ${req.body.user})`, function(err, rows){
+                    const status = Number(Object.keys.rows[0]);
+                    if(status === 1){
+                        db.query(`UPDATE ${req.body.name}_member SET status = 0 WHERE (name = ${req.body.user})`)
+                    } 
+                })
+            }
         }
 })
 
@@ -255,6 +280,14 @@ app.get('/member', function(req, res){
     })
 })
 
+app.post('/day', function(req, res){
+    db.query(`UPDATE ${req.body.name}_member status=1 WHERE (name = 3)`)
+})
+
+app.post('/night', function(req, res){
+
+})
+
 app.get('/test2', function(req, res){
     db.connect();
     db.query(`CREATE TABLE ${req.body.name}_member (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
@@ -263,5 +296,12 @@ app.get('/test2', function(req, res){
 })
 
 app.get('/test3', function(req, res){
-    res.json(1)
+    jwt.verify(req.body.token, SECRET_KEY, (err, encode) => {
+        if(err){
+            res.json(err)
+        }
+        else{
+            res.json(encode)
+        }
+    })
 })

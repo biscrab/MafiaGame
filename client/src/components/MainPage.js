@@ -3,6 +3,7 @@ import * as S from '../styled/App'
 import Room from '../contents/Room'
 import axios from 'axios'
 import { useHistory } from 'react-router-dom'
+import { useAsync } from "react-async";
 
 const MainPage = () => {
 
@@ -10,14 +11,12 @@ const MainPage = () => {
 
     const [rlist, setRlist] = useState([]);
     const [oncreate, setOncreate] = useState(false);
-    const [room, setRoom] = useState({password: "", admin: localStorage.name, name: ""})
-
-    useEffect(()=>{
-        axios.get('http://localhost:1234/room')
-            .then(response => {
-                setRlist([...response.data]);
-            })
-    })
+    const [room, setRoom] = useState({password: "", admin: localStorage.name, name: "", max: 8})
+    
+    const getRoom = async() => {
+        var r = await axios.get('http://localhost:1234/room');
+        setRlist([...r.data])
+    }
 
     const createRoom = () => {
         axios.post('http://localhost:1234/room', room)
@@ -27,7 +26,17 @@ const MainPage = () => {
     }
 
     const setMax = (e) => {
-        setRoom({...room, price: e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 8)})
+        setRoom({...room, price: e.target.value})
+        setRoom({...room, price: room.price.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')})
+    }
+
+    const onChange = (e) => {
+        const {name, value} = e.target
+
+        setRoom({
+            ...room,
+            [name]: value
+        })
     }
 
     const CreateBorder = () => {
@@ -36,9 +45,9 @@ const MainPage = () => {
             <S.CreateBorder>
                 <S.X onClick={()=>setOncreate(false)}>X</S.X>
                 <h2>방 만들기</h2>
-                <S.LoginInput value={room.name} placeholder="방이름" onChange={(e)=>setRoom({...room, name: e.target.value})}></S.LoginInput>
-                <S.LoginInput value={room.max} placeholder="인원수 제한" onChange={(e)=>setMax(e)}></S.LoginInput>
-                <S.LoginInput value={room.password} placeholder="비밀번호" onChange={(e)=>setRoom({...room, password: e.target.value})}></S.LoginInput>
+                <S.LoginInput name="name" placeholder="방이름" onChange={(e)=>onChange(e)} value={room.pname} />
+                <S.LoginInput placeholder="인원수 제한" onChange={(e)=>setMax(e)} value={room.max} />
+                <S.LoginInput name="password" placeholder="비밀번호" onChange={(e)=>onChange(e)} value={room.password} />
                 <S.LoginButton color="blueviolet" onClick={()=>createRoom()}>방 만들기</S.LoginButton>
             </S.CreateBorder>
         </S.Background>
