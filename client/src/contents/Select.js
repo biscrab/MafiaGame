@@ -4,7 +4,7 @@ import * as S from '../styled/App'
 const Select = ({item}) => {
     return(
         <S.Select>
-            <S.SImg src={"https://icon-library.com/images/human-icon/human-icon-22.jpg"}></S.SImg>
+            <S.SImg src={"https://icon-library.com/images/icon-human/icon-human-21.jpg"}></S.SImg>
             <S.SSpan>{item.name}</S.SSpan>
         </S.Select>
     )

@@ -1,3 +1,4 @@
+import exp from "constants";
 import styled from "styled-components";
 
 export const Header = styled.nav`
@@ -32,6 +33,7 @@ export const ChatDiv = styled.div`
 export const MyChatDiv = styled.div`
     display: flex;
     justify-content: flex-end;
+    margin-bottom: 10px;
 `
 
 export const MyChat = styled.div`
@@ -39,16 +41,34 @@ export const MyChat = styled.div`
     color: white;
     border-radius: 5px;
     text-align: center;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    height: 30px;
 `
 
-export const Chat = styled.div`
+export const Chat = styled.span`
     background-color: blueviolet;
     color: white;
     border-radius: 5px;
     text-align: center;
+    padding: 10px;
+    width: 50px;
+    margin-left: 10px;
+    height: 30px;
 `
 
 export const Game = styled.body`
+`
+
+export const CDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 50px;
+    padding: 20px;
+`
+export const CImg = styled.img`
+    height: 50px;
 `
 
 export const IDiv = styled.div`
@@ -107,16 +127,22 @@ export const LoginBorder = styled.div`
 export const SelectBorder = styled.div`
     background-color: white;
     border-radius: 10px;
-    height: 450px;
-    width: 450px;
+    height: 460px;
+    width: 460px;
     position: relative;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
+    padding: 20px;
+`
+
+export const SB = styled.div`
+    height: 440px;
+    width: 440px;
+    padding: 10px;
+    display: flex;
     flex-wrap: wrap;
     overflow-y: auto;
-    padding: 10px;
-    justify-content: center;
 `
 
 export const Select = styled.div`
@@ -130,6 +156,7 @@ export const Select = styled.div`
     flex-direction: column;
     text-align: center;
     margin: 10px;
+    background-color: rgb(250, 250, 250);
 
     :hover{
         box-shadow: 0px 0px 3px 3px rgba(100, 0, 255, 0.3);
@@ -251,6 +278,9 @@ export const RoomCard = styled.div`
     box-shadow: 0px 0px 10px 3px rgb(230,230,230);
     background-color: white;
     padding: 10px;
+    :hover{
+        cursor: pointer;
+    }
 `
 
 export const Status = styled.div`

@@ -6,6 +6,7 @@ body{
 
 button{
     font-family: 'IBM Plex Sans KR', sans-serif;
+    cursor: pointer;
 }
 
 textarea{

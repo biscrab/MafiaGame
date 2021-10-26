@@ -6,13 +6,17 @@ import { useAsync } from "react-async";
 
 const Room = ({item}) => {
 
+    const [member, setMember] = useState();
     /*
     const countMember = async() => {
         var member = await axios.get('http://localhost:1234/test', item.name);
     }*/
 
     useEffect(()=>{
-        axios.get('/member', item.name)
+        axios.get('http://localhost:1234/member')
+            .then(res => {
+                console.log(res.data);
+        })
     })
 
     let history = useHistory();
@@ -23,7 +27,7 @@ const Room = ({item}) => {
             <S.Status color={item.status === 0 ? "green" : "red"}>
                 <i class="fas fa-circle fa-xs"></i>
             </S.Status>
-                <span>{item.name} (/{item.max})</span>
+                <span>{item.name} ({member}/{item.max})</span>
             </S.CName>
         </S.RoomCard>
     )

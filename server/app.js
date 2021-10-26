@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 let jwt = require("jsonwebtoken");
-const jwt_decode = require("jwt-decode");
 var server = require('http').createServer(app);
 const mysql = require('mysql');
 const cors = require('cors')
@@ -23,16 +22,24 @@ const db = mysql.createConnection({
 
 io.on('connection', function(socket) {
     socket.emit("연결");
-    socket.on("join", function(data) {
+    socket.on("leave", function(data){
+        socket.leave(data);
+    })
+    socket.on("join", (data) => {
+        console.log(data);
         socket.join(data);
-        //socket.set('room', data);
     }) 
+    socket.on("leave", (data) => {
+        socket.leave(data);
+    })
     socket.on("message", (data) => {
-        socket.get(room).emit("message", data);
-        let life = checkDeath(message.id, message.name);
-        if(life === 1){
-            chat(data);
-        }
+        //let life = checkDeath(message.id, message.name);
+        //if(life === 1){
+            //chat(data);
+        //}
+        console.log(data);
+        io.to(data.id).emit("chat", data);
+        db.query(`INSERT ${data.id}_chat (contents, user) VALUE (${data.contents}, ${data.user})`)
     })
 });
 
@@ -311,10 +318,12 @@ app.get('/test', function(req, res){
 })
 
 app.get('/member', function(req, res){
-    db.query(`SELECT count(*) from ${req.body}_member`, function(err, rows){
-        //res.json(Number(Object.keys(rows)[0]))
-        res.json(req.body);
+    db.connect();
+    db.query(`SELECT count(*) from ${req.body.name}_member`, function(err, rows){
+        var r = rows[0]
+        res.json(r[Object.keys(r)[0]])
     })
+    db.end();
 })
 
 app.post('/day', function(req, res){

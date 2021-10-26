@@ -14,18 +14,23 @@ const GamePage = () => {
   const [messange, setMessange] = useState();
   const [ipassword, setIpassword] = useState();
   const [onpassword, setOnpassword] = useState();
-  const [user, setUser] = useState([{name: "1"},{name: "1"},{name: "1"},{name: "1"},{name: "1"},{name: "1"},{name: "1"}]);
-  const [onselect, setOnselect] = useState(true);
+  const [user, setUser] = useState([{name: "1"}, {name: "1"}, {name: "1"}, {name: "1"}, {name: "1"}, {name: "1"}, {name: "1"}]);
+  const [onselect, setOnselect] = useState(false);
   const [selected, setSelected] = useState()
 
-  const socket = io("localhost:1234");
-  socket.on("connection", (arg) => { 
-    console.log(arg); 
+  const socket = io("http://localhost:1234");
+  socket.on("connection", () => { 
+    console.log("connected"); 
   });
 
   socket.on("disconnect", () => {
     console.log("discount")
   });
+
+  socket.on("chat", (data)=>{
+    console.log(data);
+    setComments([...comments, {id: data.id, contents: data.contents, user: data.user}]);
+  })
 
   useEffect(()=>{
     /*
@@ -44,10 +49,14 @@ const GamePage = () => {
         })*/
         socket.emit("join", params.id)
   },[])
+  /*
+  useEffect(()=>{
+    axios.get('http://localhost:1234/chat')
+  })*/
 
   const sendMessage = () => {
     if(messange){
-      socket.emit("message", messange);
+      socket.emit("message", {id: params.id, contents: messange, user: "1"});
       document.body.scrollTop = document.body.scrollHeight;
     }
   };
@@ -64,19 +73,26 @@ const GamePage = () => {
     </S.Background>
     );
   }
+
+  function select(item) {
+    setSelected(item);
+    setOnselect(false);
+  }
   
   const SelectBorder = () => {
     return(
       <S.Background>
         <S.SelectBorder>
+        <S.SB>
         {user.map(
           i => (
-            <S.Select onClick={()=>setSelected(item)&&console.log(item)} shadow={selected === item ? "0px 0px 1px 1px rgba(100, 0, 255)": ""}>
-              <S.SImg src={"http://cdn.onlinewebfonts.com/svg/img_275609.png"}></S.SImg>
+            <S.Select onClick={()=>select(item)} shadow={selected === item ? "0px 0px 1px 1px rgba(100, 0, 255)": ""}>
+              <S.SImg src={"https://icon-library.com/images/icon-human/icon-human-21.jpg"}></S.SImg>
               <S.SSpan>{i.name}</S.SSpan>
             </S.Select>
           )
         )}
+        </S.SB>
         </S.SelectBorder>
       </S.Background>
     )
@@ -85,18 +101,27 @@ const GamePage = () => {
   return (
     <>
     <S.Game>
-      <ul>
-        {item.map(
-          message => {
-            return(
-              <S.Chat>{message}</S.Chat>   
-            )
-          })
+      <S.CDiv>
+        {comments.map(
+          message => (
+            <>
+            {message.user === user ?
+                <S.MyChatDiv>
+                    <S.MyChat>{message.contents}</S.MyChat><S.CImg src={"https://w7.pngwing.com/pngs/1/964/png-transparent-user-profile-computer-icons-login-profile-icon-police-officer-black-avatar.png"}></S.CImg>
+                </S.MyChatDiv>
+                :
+                <S.ChatDiv>
+                    <S.CImg src={"https://w7.pngwing.com/pngs/1/964/png-transparent-user-profile-computer-icons-login-profile-icon-police-officer-black-avatar.png"}></S.CImg><S.Chat>{message.contents}</S.Chat>
+                </S.ChatDiv>
+            }
+            </>   
+          ))
         }
-      </ul>
+      </S.CDiv>
       <S.IDiv>
         <S.Textarea onChange={(e)=>setMessange(e.target.value)} value={messange}/>
         <S.CButton onClick={() => sendMessage()}>메세지 보내기</S.CButton>
+        <button onClick={()=>console.log(comments)}></button>
       </S.IDiv>
   </S.Game>
     {onpassword
