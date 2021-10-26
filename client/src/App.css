@@ -1,6 +1,7 @@
 body{
  background-color: #eeeeee;
  font-family: 'IBM Plex Sans KR', sans-serif;
+ -webkit-user-drag: none;
 }
 
 button{

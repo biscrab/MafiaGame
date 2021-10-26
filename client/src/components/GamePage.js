@@ -14,8 +14,8 @@ const GamePage = () => {
   const [messange, setMessange] = useState();
   const [ipassword, setIpassword] = useState();
   const [onpassword, setOnpassword] = useState();
-  const [user, setUser] = useState([{name: "1"}]);
-  const [onselect, setOnselect] = useState(false);
+  const [user, setUser] = useState([{name: "1"},{name: "1"},{name: "1"},{name: "1"},{name: "1"},{name: "1"},{name: "1"}]);
+  const [onselect, setOnselect] = useState(true);
   const [selected, setSelected] = useState()
 
   const socket = io("localhost:1234");
@@ -71,7 +71,7 @@ const GamePage = () => {
         <S.SelectBorder>
         {user.map(
           i => (
-            <S.Select onClick={()=>setSelected(item)} shadow={selected === item ? "0px 0px 0px 3px rgba(100, 0, 255)": ""}>
+            <S.Select onClick={()=>setSelected(item)&&console.log(item)} shadow={selected === item ? "0px 0px 1px 1px rgba(100, 0, 255)": ""}>
               <S.SImg src={"http://cdn.onlinewebfonts.com/svg/img_275609.png"}></S.SImg>
               <S.SSpan>{i.name}</S.SSpan>
             </S.Select>

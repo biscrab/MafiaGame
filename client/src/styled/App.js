@@ -108,19 +108,19 @@ export const SelectBorder = styled.div`
     background-color: white;
     border-radius: 10px;
     height: 450px;
-    width: 400px;
+    width: 450px;
     position: relative;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     flex-wrap: wrap;
-    flex-direction: column;
     overflow-y: auto;
     padding: 10px;
+    justify-content: center;
 `
 
 export const Select = styled.div`
-    box-shadow: 0px 0px 3px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);
     box-shadow: ${props => props.shadow};
     width: 100px;
     height: 140px;

@@ -11,6 +11,10 @@ const Room = ({item}) => {
         var member = await axios.get('http://localhost:1234/test', item.name);
     }*/
 
+    useEffect(()=>{
+        axios.get('/member', item.name)
+    })
+
     let history = useHistory();
 
     return(

@@ -3,10 +3,10 @@ const app = express();
 app.use(express.json());
 let jwt = require("jsonwebtoken");
 const jwt_decode = require("jwt-decode");
-var fs = require('fs');
-const http = require('http');
 var server = require('http').createServer(app);
 const mysql = require('mysql');
+const cors = require('cors')
+app.use(cors())
 const io = require('socket.io')(server, {
     cors: {
       origin: "*",
@@ -31,7 +31,7 @@ io.on('connection', function(socket) {
         socket.get(room).emit("message", data);
         let life = checkDeath(message.id, message.name);
         if(life === 1){
-            db.query(`INSERT INTO ${data.name}_chat (name, contents) VALUE (${data.user}, ${data.contents})`)
+            chat(data);
         }
     })
 });
@@ -39,6 +39,12 @@ io.on('connection', function(socket) {
 server.listen(1234, function () {
     console.log('Example app listening on port', 1234);
 });
+
+function chat(data) {
+    db.connect();
+        db.query(`INSERT INTO ${data.name}_chat (name, contents) VALUE (${data.user}, ${data.contents})`)
+    db.end();
+}
 
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
@@ -109,11 +115,17 @@ function checkLogin(token){
             if(rows){
                 return true;
             }
-            else{
-                return false;
-            }
         })
     })
+    return false;
+}
+
+function getUser(token) {
+    var name;
+    jwt.verify(token, 'apple', (err, encode) => {
+        name = encode.name;
+    })
+    return name
 }
 
 function getJob(req){
@@ -140,19 +152,22 @@ app.post('/signup', function(req, res){
     db.end();
 });   
 
-
 app.post('/room', function(req, res){
     let member = `${req.body.name}_member`;
     let chat = `${req.body.name}_chat`;
     if(checkLogin(req.headers.authorization)){
+        let user = getUser(req.headers.token);
         db.connect();
-            db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, req.body.max])
-            db.query(`CREATE TABLE ${member} (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
+            db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, Number(req.body.max)])
+            db.query(`CREATE TABLE ${member} (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, voted INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
             db.query(`CREATE TABLE ${chat} (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL);`)
-            db.query(`INSERT INTO ${member} (name) VALUES (${req.body.user})`)
-            db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [req.body.user]);
+            db.query(`INSERT INTO ${member} (name) VALUES (${user})`)
+            db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [user]);
             res.json("성공");
         db.end();
+    }
+    else{
+        res.status = 401;
     }
 })
 
@@ -254,6 +269,10 @@ app.post('/kill', function(req, res){
                     if(status === 1){
                         db.query(`UPDATE ${req.body.name}_member SET status = 0 WHERE (name = ${req.body.user})`)
                     } 
+                    else if(status === 3){
+                        var mes = {name: req.body.name, contents: "의사가 성공적으로 치료하였습니다.", user: "사회자"}
+                        chat(mes);
+                    }
                 })
             }
         }
@@ -293,7 +312,8 @@ app.get('/test', function(req, res){
 
 app.get('/member', function(req, res){
     db.query(`SELECT count(*) from ${req.body}_member`, function(err, rows){
-        res.json(Number(Object.keys(rows)[0]))
+        //res.json(Number(Object.keys(rows)[0]))
+        res.json(req.body);
     })
 })
 
@@ -302,8 +322,37 @@ app.post('/day', function(req, res){
 })
 
 app.post('/night', function(req, res){
-
+    judjement(req.body.name);
+    db.query(`UPDATE ${req.body.name}_member voted=0`)
 })
+
+app.post('/vote', function(req, res){
+    db.connect();
+        db.query(`UPDATE ${req.body.name}_member voted += 1 WHERE (name=${req.body.user})`);
+        let mes = {name: req.body.name, contents: `${req.body.user} 한 표`, user: "사회자"}
+        chat(mes);
+    db.end();
+})
+
+function judjement(name){
+    let m;
+    let voted;
+    let target;
+    var mes
+    db.query(`SELECT * from ${name}_member ORDER BY voted`, function(err, rows){
+        voted = Number(rows[0].voted);
+        voted = Number(rows[0].target);
+    })
+    if(voted > m){
+        db.query(`UPDATE ${name}_mebmer status=0 WHERE name=${target}`)
+        mes = {name: name, contents: `${target}이 투표로 인해 사망하였습니다.`, user: "사회자"}
+        chat(mes)
+    }
+    else{
+        mes = {name: name, contents: `과반수를 넘지 못해 투표가 무효가 되었습니다.`, user: "사회자"}
+        chat(mes);
+    }
+}
 
 app.get('/test2', function(req, res){
     db.connect();
@@ -313,12 +362,5 @@ app.get('/test2', function(req, res){
 })
 
 app.get('/user', function(req, res){
-    jwt.verify(req.headers.authorization, 'apple', (err, encode) => {
-        if(err){
-            res.json(err)
-        }
-        else{
-            res.json(encode.name)
-        }
-    })
+    res.json(getUser(req.headers.authorization));
 })

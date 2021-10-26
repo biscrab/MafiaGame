@@ -3,7 +3,6 @@ import * as S from '../styled/App'
 import Room from '../contents/Room'
 import axios from 'axios'
 import { useHistory } from 'react-router-dom'
-import { useAsync } from "react-async";
 
 const MainPage = () => {
 
@@ -12,16 +11,18 @@ const MainPage = () => {
     const [rlist, setRlist] = useState([]);
     const [oncreate, setOncreate] = useState(false);
     const [room, setRoom] = useState({password: "", admin: localStorage.name, name: "", max: 8})
-    
-    const getRoom = async() => {
-        var r = await axios.get('http://localhost:1234/room');
-        setRlist([...r.data])
-    }
 
+    useEffect(()=>{
+        axios.get('http://localhost:1234/room')
+            .then(res => {
+                setRlist([...res.data]);
+        })
+    })
+    
     const createRoom = () => {
         axios.post('http://localhost:1234/room', room)
-            .then(response => {
-                history.push(`/game/${response.data}`)
+            .then(res => {
+                history.push(`/game/${res.data}`)
             })
     }
 
@@ -56,7 +57,7 @@ const MainPage = () => {
     return(
         <>
         <S.Main>
-            <S.Border>
+            <S.Border onClick={console.log(rlist)}>
                 {rlist ?
                 <Room lists={rlist}/>
                 :
