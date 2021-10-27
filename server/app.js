@@ -39,7 +39,7 @@ io.on('connection', function(socket) {
         //}
         console.log(data);
         io.to(data.id).emit("chat", data);
-        db.query(`INSERT ${data.id}_chat (contents, user) VALUE (${data.contents}, ${data.user})`)
+        db.query(`INSERT ${data.id}_chat (contents, name) VALUE (${data.contents}, ${data.user})`)
     })
 });
 
@@ -166,7 +166,7 @@ app.post('/room', function(req, res){
         let user = getUser(req.headers.token);
         db.connect();
             db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, Number(req.body.max)])
-            db.query(`CREATE TABLE ${member} (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, voted INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
+            db.query(`CREATE TABLE ${member} (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, voted INT NULL DEFAULT 0, day INT DEFAULT 1, time INT DEFAULT 300, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
             db.query(`CREATE TABLE ${chat} (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL);`)
             db.query(`INSERT INTO ${member} (name) VALUES (${user})`)
             db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [user]);
@@ -317,23 +317,81 @@ app.get('/test', function(req, res){
     })
 })
 
+function getMember(){
+db.connect();
+db.query(`SELECT count(*) from ${req.body.name}_member`, function(err, rows){
+    var r = rows[0]
+    return(r[Object.keys(r)[0]])
+})
+db.end();
+}
+
 app.get('/member', function(req, res){
-    db.connect();
-    db.query(`SELECT count(*) from ${req.body.name}_member`, function(err, rows){
-        var r = rows[0]
-        res.json(r[Object.keys(r)[0]])
-    })
-    db.end();
+    res.json(getMember(req));
 })
 
 app.post('/day', function(req, res){
-    db.query(`UPDATE ${req.body.name}_member status=1 WHERE (name = 3)`)
+    var time;
+    var day;
+    db.connect();
+    db.query(`UPDATE ${req.body.name}_member status=1 WHERE (status = 3)`)
+    gameOver();
+    if(time > 0){
+        db.query(`UPDATE room time = time - 1 where name=${req.body.name}`)
+    }
+    else if(time <= 0){
+        db.query(`SELECT day from room where name=${req.body.name}`, function(err, rows){
+            day = Number(rows[0].day)
+        })
+        db.query(`UPDATE room time = 3000 where name=${req.body.name}`)
+        if(day === 1){
+            db.query(`UPDATE room day = 0 where name=${req.body.name}`)
+        }
+        else{
+            db.query(`UPDATE room day = 1 where name=${req.body.name}`)
+        }
+    }
+    db.end();
 })
 
 app.post('/night', function(req, res){
+    var time;
     judjement(req.body.name);
     db.query(`UPDATE ${req.body.name}_member voted=0`)
+    db.query(`TRUNCATE ${req.body.name}_member`);
+    gameOver();
 })
+
+app.get('/time', function(req, res){
+    db.connect();
+    db.query('SELECT time from ')
+    db.end();
+})
+
+app.post('/start', function(req, res){
+    db.query(`TRUNCATE ${req.body.name}_member`);
+    chat({name: "사회자" , contents: "게임이 시작됩니다."})
+})
+
+function gameOver(){
+    var citizen;
+    var mafia;
+    db.connect();
+    db.query(`SELECT * from ${req.body.member} where job = 1`, function(err, rows){
+        mafia = Number(rows[Object.keys(rows)[0]])
+    })
+    citizen = getUser(req) - mafia;
+    if(mafia >= citizen){
+        db.query(`TRUNCATE ${req.body.name}_member`);
+        chat({contents: "마피아가 승리하였습니다."})
+    }
+    else if(mafia === 0){
+        db.query(`UPDATE ${req.boy.name}_member life=1 and job-0 `)
+        db.query(`TRUNCATE ${req.body.name}_member`);
+        chat({contents: "시민이 승리하였습니다."})
+    }
+    db.end();
+}
 
 app.post('/vote', function(req, res){
     db.connect();
@@ -372,4 +430,20 @@ app.get('/test2', function(req, res){
 
 app.get('/user', function(req, res){
     res.json(getUser(req.headers.authorization));
+})
+
+app.get('/chat', function(req, res){
+    db.connect();
+    db.query(`SELECT * from ${req.body.name}_chat`, function(err, rows){
+        res.json(rows);
+    })
+    db.end();
+})
+
+app.get('/test4', function(req, res){
+    db.connect();
+    db.query(`SELECT day from room where name=${req.body.name}`, function(err, rows){
+        res.json(Number(rows[0].day));
+    })
+    db.end();
 })

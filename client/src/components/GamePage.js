@@ -49,10 +49,11 @@ const GamePage = () => {
         })*/
         socket.emit("join", params.id)
   },[])
-  /*
+  
   useEffect(()=>{
-    axios.get('http://localhost:1234/chat')
-  })*/
+    axios.get('http://localhost:1234/chat', params.id)
+      .then(response => setMessange(response.data))
+  })
 
   const sendMessage = () => {
     if(messange){
