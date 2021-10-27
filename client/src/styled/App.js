@@ -60,15 +60,34 @@ export const Chat = styled.span`
 export const Game = styled.body`
 `
 
+export const CUDiv = styled.div`
+    position: relative;
+    top: 50px;
+    display: flex;
+`
+
+export const USpan = styled.span`
+
+`
+
 export const CDiv = styled.div`
     display: flex;
     flex-direction: column;
-    position: relative;
-    top: 50px;
     padding: 20px;
 `
+
 export const CImg = styled.img`
     height: 50px;
+`
+
+export const GameStart = styled.button`
+    border: 0;
+    outline: 0;
+    background-color: crimson;
+    color: white;
+    width: 10%;
+    height: 80px;
+    font-size: 18px;
 `
 
 export const IDiv = styled.div`
@@ -78,16 +97,17 @@ export const IDiv = styled.div`
     height: 80px;
     bottom: 0;
     display: flex;
-    padding: 2%;
+    justify-content: center;
+    padding-top: 40px;
     padding-bottom: 50px;
 `
 
 export const Textarea = styled.textarea`
     resize: none;
-    width: 84%;
+    width: 60%;
     outline: 0;
     font-size: 16px;
-    border: 1px solid gray;
+    border: 2px solid darkgray;
     padding: 1% 1%;
 `
 
@@ -124,6 +144,52 @@ export const LoginBorder = styled.div`
     align-items: center;
 `
 
+export const LeaderBorder = styled.div`
+    background-color: white;
+    border-radius: 10px;
+    height: 460px;
+    width: 460px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+`
+
+export const LH = styled.h2`
+    margin: 0;
+    text-align: center;
+`
+
+export const LX = styled.span`
+    color: gray;
+    height: 0;
+    position: relative;
+    left: 49.5%;
+    bottom: 2.5%;
+    font-size: 20px;
+    :hover{
+        cursor: pointer;
+    }
+`
+
+export const UserUl = styled.div`
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 90%;
+`
+
+export const UserList = styled.div`
+    border-bottom: 1px solid gray;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+`
+
 export const SelectBorder = styled.div`
     background-color: white;
     border-radius: 10px;
@@ -133,7 +199,14 @@ export const SelectBorder = styled.div`
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    padding: 20px;
+    flex-direction: column;
+`
+
+export const BH = styled.h2`
+    margin: 0;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
 `
 
 export const SB = styled.div`
@@ -157,9 +230,49 @@ export const Select = styled.div`
     text-align: center;
     margin: 10px;
     background-color: rgb(250, 250, 250);
+    cursor: pointer;
 
     :hover{
         box-shadow: 0px 0px 3px 3px rgba(100, 0, 255, 0.3);
+    }
+`
+
+export const MSelect = styled.div`
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: ${props => props.shadow};
+    color: white;
+    width: 100px;
+    height: 140px;
+    padding: 10px;
+    border-radius: 3%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 10px;
+    background-color: rgb(255, 70, 70);
+    cursor: pointer;
+
+    :hover{
+        box-shadow: 0px 0px 3px 3px rgba(255, 0, 0);
+    }
+`
+
+export const DSelect = styled.div`
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: ${props => props.shadow};
+    width: 100px;
+    height: 140px;
+    padding: 10px;
+    border-radius: 3%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin: 10px;
+    background-color: rgb(250, 250, 250);
+    cursor: pointer;
+
+    :hover{
+        box-shadow: 0px 0px 3px 3px rgba(0, 255, 0);
     }
 `
 

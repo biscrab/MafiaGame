@@ -14,9 +14,20 @@ const GamePage = () => {
   const [messange, setMessange] = useState();
   const [ipassword, setIpassword] = useState();
   const [onpassword, setOnpassword] = useState();
-  const [user, setUser] = useState([{name: "1"}, {name: "1"}, {name: "1"}, {name: "1"}, {name: "1"}, {name: "1"}, {name: "1"}]);
-  const [onselect, setOnselect] = useState(false);
-  const [selected, setSelected] = useState()
+  const [user, setUser] = useState([{name: "1", job: 1}, {name: "1", job: 1}, {name: "1", job: 0}, {name: "1", job: 2}, {name: "1", job: 1}, {name: "1", job: 1}, {name: "1", job: 1}]);
+
+  const [onleader, setOnleader] = useState();
+
+  const [onelect, setOnelect] = useState(false);
+  const [selected, setSelect] = useState()
+
+  const [onkill, setKill] = useState(false)
+
+  const [onheal, setHeal] = useState(false);
+
+  const [day, setDay] = useState();
+
+  const [job, setJob] = useState();
 
   const socket = io("http://localhost:1234");
   socket.on("connection", () => { 
@@ -47,13 +58,24 @@ const GamePage = () => {
           history.push("/");
           alert("존재하지 않는 방 입니다.");
         })*/
-        socket.emit("join", params.id)
+        socket.emit("join", params.id);
+        axios.get('http://localhost:1234/job')
+          .then(res => setJob(res.data))
   },[])
   
   useEffect(()=>{
+    /*
     axios.get('http://localhost:1234/chat', params.id)
-      .then(response => setMessange(response.data))
+      .then(res => setMessange(res.data))
+    axios.get('http://localhost:1234/day', params.id)
+      .then(res => setDay(res.data))
+    axios.get('http://localhost:1234/member', params.id)
+      .then(res => setUser(res.data))*/
   })
+
+  useEffect(()=>{
+    //setOnelect(true);
+  },[day])
 
   const sendMessage = () => {
     if(messange){
@@ -61,6 +83,10 @@ const GamePage = () => {
       document.body.scrollTop = document.body.scrollHeight;
     }
   };
+
+  const gameStart = () => {
+    axios.post('/start', {name: params.id})
+  }
 
   const PasswordBorder = () => {
     return(
@@ -75,19 +101,20 @@ const GamePage = () => {
     );
   }
 
-  function select(item) {
-    setSelected(item);
-    setOnselect(false);
+  function elect(item) {
+    setSelect(item);
+    setOnelect(false);
   }
   
-  const SelectBorder = () => {
+  const ElectBorder = () => {
     return(
       <S.Background>
         <S.SelectBorder>
+          <S.BH>투표할 사람을 선택해 주세요</S.BH>
         <S.SB>
         {user.map(
           i => (
-            <S.Select onClick={()=>select(item)} shadow={selected === item ? "0px 0px 1px 1px rgba(100, 0, 255)": ""}>
+            <S.Select onClick={()=>elect(item)} shadow={selected === item ? "0px 0px 1px 1px rgba(100, 0, 255)": ""}>
               <S.SImg src={"https://icon-library.com/images/icon-human/icon-human-21.jpg"}></S.SImg>
               <S.SSpan>{i.name}</S.SSpan>
             </S.Select>
@@ -95,6 +122,78 @@ const GamePage = () => {
         )}
         </S.SB>
         </S.SelectBorder>
+      </S.Background>
+    )
+  }
+
+  const MBorder = () => {
+    return(
+      <S.Background>
+        <S.SelectBorder>
+          <S.BH>살해할 사람을 선택해 주세요</S.BH>
+        <S.SB>
+        {user.map(
+          i => (
+            <>
+            {i.job !== 1 ?
+            <S.MSelect onClick={()=>elect(item)} shadow={selected === item ? "0px 0px 1px 1px rgba(255, 0, 0)": ""}>
+              <S.SImg src={"https://icon-library.com/images/icon-human/icon-human-21.jpg"}></S.SImg>
+              <S.SSpan>{i.name}</S.SSpan>
+            </S.MSelect>
+            :
+            <></>
+            }
+            </>
+          )
+        )}
+        </S.SB>
+        </S.SelectBorder>
+      </S.Background>
+    )
+  }
+
+  const DBorder = () => {
+    return(
+      <S.Background>
+        <S.SelectBorder>
+          <S.BH>치료할 사람을 선택해 주세요</S.BH>
+        <S.SB>
+        {user.map(
+          i => (
+            <S.DSelect onClick={()=>elect(item)} shadow={selected === item ? "0px 0px 1px 1px rgba(0, 255, 0)": ""}>
+              <S.SImg src={"https://icon-library.com/images/icon-human/icon-human-21.jpg"}></S.SImg>
+              <S.SSpan>{i.name}</S.SSpan>
+            </S.DSelect>
+          )
+        )}
+        </S.SB>
+        </S.SelectBorder>
+      </S.Background>
+    )
+  }
+
+  const getjob = (id) => {
+    var job = ["시민", "마피아", "경찰", "의사"]
+    return job[id];
+  }
+
+  const LeaderBorder = () => {
+    return(
+      <S.Background>
+        <S.LeaderBorder>
+          <S.LX onClick={()=>setOnleader(false)}>X</S.LX>
+          <S.UserUl>
+          <S.LH>🏆 마피아 우승 🏆</S.LH>
+          {user.map(
+            item => (
+              <S.UserList>
+                <span>{item.name} ({getjob(1)})</span>
+                <span>(생존)</span>
+              </S.UserList>
+            )
+          )}
+          </S.UserUl>
+        </S.LeaderBorder>
       </S.Background>
     )
   }
@@ -122,7 +221,7 @@ const GamePage = () => {
       <S.IDiv>
         <S.Textarea onChange={(e)=>setMessange(e.target.value)} value={messange}/>
         <S.CButton onClick={() => sendMessage()}>메세지 보내기</S.CButton>
-        <button onClick={()=>console.log(comments)}></button>
+        <S.GameStart onClick={() => gameStart()}>게임시작</S.GameStart>
       </S.IDiv>
   </S.Game>
     {onpassword
@@ -131,9 +230,24 @@ const GamePage = () => {
     :
     <></>
     }
-    {onselect ?
-      <SelectBorder />
+    {onelect ?
+      <ElectBorder />
       : 
+      <></>
+    }
+    {onkill ?
+      <MBorder />
+      :
+      <></>
+    }
+    {onheal ?
+      <DBorder />
+      :
+      <></>
+    }
+    {onleader ?
+      <LeaderBorder />
+      :
       <></>
     }
   </>

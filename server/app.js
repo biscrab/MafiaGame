@@ -92,7 +92,7 @@ app.post('/login', function(req, res){
 
 function check(req) {
     db.connect();
-    db.query(`SELECT * FROM user WHERE name=?`, [req.body.name]), function(error, rows){
+    db.query(`SELECT * FROM user WHERE name=?`, [req.body.name]), function(err, rows){
         if(rows){
             return(false);
         }
@@ -105,7 +105,7 @@ function check(req) {
 
 function checkDeath(id, name){
     db.connect();
-    db.query("SELECT status FROM ?_member WHERE name=?", [id, name], function(error, rows){
+    db.query("SELECT status FROM ?_member WHERE name=?", [id, name], function(err, rows){
         if(rows){
             return(rows);
         }
@@ -166,7 +166,7 @@ app.post('/room', function(req, res){
         let user = getUser(req.headers.token);
         db.connect();
             db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, Number(req.body.max)])
-            db.query(`CREATE TABLE ${member} (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, voted INT NULL DEFAULT 0, day INT DEFAULT 1, time INT DEFAULT 300, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
+            db.query(`CREATE TABLE ${member} (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, voted INT NULL DEFAULT 0, day INT DEFAULT 1, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
             db.query(`CREATE TABLE ${chat} (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL);`)
             db.query(`INSERT INTO ${member} (name) VALUES (${user})`)
             db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [user]);
@@ -194,17 +194,15 @@ app.post('/enter', function(req, res){
     let max;
     let status;
     let ingame;
-
+    
+    db.connect();
     if(checkLogin(req.headers.authorization)){
-    db.query('SELECT max from room WHERE (name = ?)', [req.body.name], function(err, rows){
-        max = rows;
+    db.query('SELECT * from room WHERE (name = ?)', [req.body.name], function(err, rows){
+        max = Number(rows[0].max);
+        status = Number(rows[0].status);
     })
     db.query('SELECT COUNT(*) from ?_member', [req.body.name], function(err, rows){
-        people = rows;
-    })
-
-    db.query('SELECT status from room WHERE (name = ?)', [req.body.name], function(err, rows){
-        status = rows;
+        people = Number(Object.keys(rows[0]));
     })
 
     if(max === people){
@@ -223,8 +221,8 @@ app.post('/enter', function(req, res){
             res.json("이미 게임 중 입니다.");
         }
     })
-    }
-    }
+    }}
+    db.end();
 })
 
 app.post('/leave', function(req, res){
@@ -364,13 +362,25 @@ app.post('/night', function(req, res){
 
 app.get('/time', function(req, res){
     db.connect();
-    db.query('SELECT time from ')
+        db.query(`SELECT time from room where name=${req.body.name}`, function(err, rows){
+            res.json(Number(rows[0].time))
+        })
     db.end();
 })
 
 app.post('/start', function(req, res){
-    db.query(`TRUNCATE ${req.body.name}_member`);
-    chat({name: "사회자" , contents: "게임이 시작됩니다."})
+    db.connect();
+    if(checkLogin(req.headers.authorization)){
+        var user = getUser(req.headers.authorization);
+        var admin;
+        db.query(`SELECT admin from ${req.body.name}_member where name=${user}`, function(err, rows){
+            admin = Number(rows[0].admin);
+        })
+        db.query(`UPDATE room status=1 where name=${req.body.name}`)
+        //db.query(`TRUNCATE ${req.body.name}_member`);
+        chat({name: "사회자" , contents: "게임이 시작됩니다."});
+    }
+    db.end();
 })
 
 function gameOver(){
@@ -382,12 +392,12 @@ function gameOver(){
     })
     citizen = getUser(req) - mafia;
     if(mafia >= citizen){
-        db.query(`TRUNCATE ${req.body.name}_member`);
+        db.query(`TRUNCATE ${req.body.name}_chat`);
         chat({contents: "마피아가 승리하였습니다."})
     }
     else if(mafia === 0){
         db.query(`UPDATE ${req.boy.name}_member life=1 and job-0 `)
-        db.query(`TRUNCATE ${req.body.name}_member`);
+        db.query(`TRUNCATE ${req.body.name}_chat`);
         chat({contents: "시민이 승리하였습니다."})
     }
     db.end();
@@ -405,20 +415,23 @@ function judjement(name){
     let m;
     let voted;
     let target;
-    var mes
+    var mes;
+    db.connect();
     db.query(`SELECT * from ${name}_member ORDER BY voted`, function(err, rows){
         voted = Number(rows[0].voted);
-        voted = Number(rows[0].target);
+        target = Number(rows[0].target);
     })
     if(voted > m){
-        db.query(`UPDATE ${name}_mebmer status=0 WHERE name=${target}`)
+        db.query(`UPDATE ${name}_mebmer status=0`)
         mes = {name: name, contents: `${target}이 투표로 인해 사망하였습니다.`, user: "사회자"}
         chat(mes)
     }
     else{
+        db.query(`UPDATE ${name}_mebmer status=0`)
         mes = {name: name, contents: `과반수를 넘지 못해 투표가 무효가 되었습니다.`, user: "사회자"}
         chat(mes);
     }
+    db.end();
 }
 
 app.get('/test2', function(req, res){
@@ -440,10 +453,11 @@ app.get('/chat', function(req, res){
     db.end();
 })
 
-app.get('/test4', function(req, res){
+app.get('/job', function(req, res){
     db.connect();
-    db.query(`SELECT day from room where name=${req.body.name}`, function(err, rows){
-        res.json(Number(rows[0].day));
+    var name = getUser(req.headers.authorization)
+    db.query(`SELECT job from ${req.body.name}_member where name=${name}`, function(err, rows){
+        res.json(Number(rows[0].job));
     })
     db.end();
 })
