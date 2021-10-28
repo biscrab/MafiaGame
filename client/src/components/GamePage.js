@@ -62,6 +62,12 @@ const GamePage = () => {
         axios.get('http://localhost:1234/job')
           .then(res => setJob(res.data))
   },[])
+
+  const onKeyPress = (e) => {
+    if(e.key === "Enter"){
+      sendMessage();
+    }
+  }
   
   useEffect(()=>{
     /*
@@ -219,9 +225,15 @@ const GamePage = () => {
         }
       </S.CDiv>
       <S.IDiv>
-        <S.Textarea onChange={(e)=>setMessange(e.target.value)} value={messange}/>
+        <S.Textarea onChange={(e)=>setMessange(e.target.value)} onKeyPress={(e)=>onKeyPress(e)} value={messange}/>
+        <>
         <S.CButton onClick={() => sendMessage()}>메세지 보내기</S.CButton>
+        {1 ? 
+        <></>
+        :
         <S.GameStart onClick={() => gameStart()}>게임시작</S.GameStart>
+        }
+        </>
       </S.IDiv>
   </S.Game>
     {onpassword

@@ -104,7 +104,7 @@ export const IDiv = styled.div`
 
 export const Textarea = styled.textarea`
     resize: none;
-    width: 60%;
+    width: 70%;
     outline: 0;
     font-size: 16px;
     border: 2px solid darkgray;

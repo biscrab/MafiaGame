@@ -461,3 +461,13 @@ app.get('/job', function(req, res){
     })
     db.end();
 })
+
+app.post('/decress', function(req, res){
+
+})
+
+app.post('/increase', function(req, res){
+    db.connect();
+
+    db.end();
+})
