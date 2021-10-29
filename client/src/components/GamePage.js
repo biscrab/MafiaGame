@@ -224,6 +224,11 @@ const GamePage = () => {
           ))
         }
       </S.CDiv>
+      <S.Info>
+        <S.Time>
+          <S.TButton>시간 단축</S.TButton>
+          <S.TButton>시간 연장</S.TButton>
+        </S.Time>
       <S.IDiv>
         <S.Textarea onChange={(e)=>setMessange(e.target.value)} onKeyPress={(e)=>onKeyPress(e)} value={messange}/>
         <>
@@ -235,6 +240,7 @@ const GamePage = () => {
         }
         </>
       </S.IDiv>
+      </S.Info>
   </S.Game>
     {onpassword
     ?

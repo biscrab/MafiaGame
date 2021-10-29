@@ -90,12 +90,36 @@ export const GameStart = styled.button`
     font-size: 18px;
 `
 
-export const IDiv = styled.div`
-    background-color: white;
+export const Info = styled.div`
     position: fixed;
     width: 100%;
-    height: 80px;
     bottom: 0;
+`
+
+export const Time = styled.div`
+    display: flex;
+    justify-content: flex-end;
+`
+
+export const TButton = styled.button`
+    background-color: white;
+    border: 0;
+    outline: 0;
+    height: 40px;
+    border-radius: 5px;
+    width: 100px;
+    margin-left: 2px;
+
+    :hover{
+        background-color: blueviolet;
+        color: white;
+    }
+`
+
+export const IDiv = styled.div`
+    background-color: white;
+    width: 100%;
+    height: 80px;
     display: flex;
     justify-content: center;
     padding-top: 40px;

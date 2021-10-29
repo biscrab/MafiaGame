@@ -13,10 +13,10 @@ const MainPage = () => {
     const [room, setRoom] = useState({password: "", admin: localStorage.name, name: "", max: 8})
 
     useEffect(()=>{
-        axios.get('http://localhost:1234/room')
+        /*axios.get('http://localhost:1234/room')
             .then(res => {
                 setRlist([...res.data]);
-        })
+        })*/
     })
     
     const createRoom = () => {
@@ -45,7 +45,7 @@ const MainPage = () => {
             <S.CreateBorder>
                 <S.X onClick={()=>setOncreate(false)}>X</S.X>
                 <h2>방 만들기</h2>
-                <S.LoginInput name="name" placeholder="방이름" onChange={(e)=>onChange(e)} value={room.pname} />
+                <S.LoginInput name="name" placeholder="방이름" onChange={(e)=>onChange(e)} value={room.name} />
                 <S.LoginInput placeholder="인원수 제한" onChange={(e)=>setMax(e)} value={room.max} />
                 <S.LoginInput name="password" placeholder="비밀번호" onChange={(e)=>onChange(e)} value={room.password} />
                 <S.LoginButton color="blueviolet" onClick={()=>createRoom()}>방 만들기</S.LoginButton>
