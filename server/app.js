@@ -181,16 +181,14 @@ app.post('/signup', async(req, res) => {
 });   
 
 app.post('/room', async(req, res) => {
-    let member = `${req.body.name}_member`;
-    let chat = `${req.body.name}_chat`;
+    db.connect();
     var logined = await checkLogin(req.headers.authorization.substring(7));
     if(logined){
         let user = await getUser(req.headers.authorization.substring(7));
-        db.connect();
             db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, Number(req.body.max)])
             db.query(`CREATE TABLE ${req.body.name}_member (
-                status INT NULL DEFAULT 1,
-                name VARCHAR(45) NOT NULL,
+               status INT NULL DEFAULT 1,
+                 name VARCHAR(45) NOT NULL,
                 job INT NULL DEFAULT 0,
                 admin INT NULL DEFAULT 0,
                 voted INT NULL DEFAULT 0,
@@ -199,10 +197,14 @@ app.post('/room', async(req, res) => {
                 time INT NULL DEFAULT 0,
                 PRIMARY KEY (name),
                 UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,
-                UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE)`
-            );
-            db.query(`CREATE TABLE ${chat} (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
-            db.query(`INSERT INTO ${member} (name) VALUES (${user})`)
+                UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE)`,
+            function(err, rows){
+                if(err){
+                    res.json("이미 존재하는 이름 입니다.")
+                }
+            });
+            db.query(`CREATE TABLE ${req.body.name}_chat (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
+            db.query(`INSERT INTO ${req.body.name} (name) VALUES (${user})`)
             db.query('CREATE TABLE hz_member (mb_name VARCHAR(255), mb_level VARCHAR(255)');
             db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [user]);
             res.json("성공");
@@ -591,4 +593,11 @@ app.post('/increase', function(req, res){
         db.query(`UPDATE ${req.body.name}_member time=1 where name=${req.body.user}`)
         db.end();
     }
+})
+
+app.post('/test5', function(req, res){
+    db.connect();
+        db.query(`CREATE TABLE ${req.body.name}_chat (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
+    db.end();
+    res.json(1);
 })
