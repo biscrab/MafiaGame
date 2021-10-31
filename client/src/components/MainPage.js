@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import * as S from '../styled/App'
 import Room from '../contents/Room'
 import axios from 'axios'
-import { useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router'
 
 const MainPage = () => {
 
@@ -15,8 +15,8 @@ const MainPage = () => {
     /*
     useEffect(()=>{
         axios.get('http://localhost:1234/room')
-            .then(res => {
-                setRlist([...res.data]);
+            .then(response => {
+                setRlist([...response.data]);
         })
     })*/
 
@@ -64,6 +64,11 @@ const MainPage = () => {
         <>
         <S.Main onClick={()=>console.log(getRoom)}>
             <S.Border onClick={console.log(rlist)}>
+                {rlist ?
+                    <Room lists={rlist}/>
+                    :
+                    <></>
+                }
             </S.Border>
             <S.BDiv>
                 <S.MButton onClick={()=>setOncreate(true)}>
