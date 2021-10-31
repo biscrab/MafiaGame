@@ -12,12 +12,18 @@ const MainPage = () => {
     const [oncreate, setOncreate] = useState(false);
     const [room, setRoom] = useState({password: "", admin: localStorage.name, name: "", max: 8})
 
+    /*
     useEffect(()=>{
-        /*axios.get('http://localhost:1234/room')
+        axios.get('http://localhost:1234/room')
             .then(res => {
                 setRlist([...res.data]);
-        })*/
-    })
+        })
+    })*/
+
+    async function getRoom() {
+        const room = await axios.get("http://localhost:1234/room")
+        return room
+    }
     
     const createRoom = () => {
         axios.post('http://localhost:1234/room', room)
@@ -56,13 +62,8 @@ const MainPage = () => {
 
     return(
         <>
-        <S.Main>
+        <S.Main onClick={()=>console.log(getRoom)}>
             <S.Border onClick={console.log(rlist)}>
-                {rlist ?
-                <Room lists={rlist}/>
-                :
-                <></>
-                }
             </S.Border>
             <S.BDiv>
                 <S.MButton onClick={()=>setOncreate(true)}>

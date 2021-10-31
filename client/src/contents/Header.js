@@ -2,17 +2,22 @@ import React,{useEffect, useState} from 'react'
 import * as S from '../styled/App'
 import axios from 'axios'
 import { useCookies } from 'react-cookie';
+import { useHistory } from 'react-router-dom';
 
 const Header = () => {
-
-    const getName = async() => {
-        const name = await axios.get("http://localhost:1234/user", )
-        return name
-    }
 
     const [cookies, setCookie, removeCookie] = useCookies(['m-token']);
 
     const [onlogin, setLogin] = useState(false);
+
+    const [name, setName] = useState();
+
+    let history = useHistory();
+
+    useEffect(()=>{
+        axios.get('http://localhost:1234/user')
+            .then(res => setName(res));
+    },[])
 
     const LoginBorder = () => {
 
@@ -67,8 +72,15 @@ const Header = () => {
     return(
         <>
         <S.Header>
+            <div onClick={()=>history.push('/')}>
+            <img src={"https://cdn-icons.flaticon.com/png/512/2099/premium/2099872.png?token=exp=1635677440~hmac=aa320fe3833e4343c4e200eddac5b5b0"}></img>
             <h3>마피아</h3>
+            </div>
+            {name ?
+            <span>{name}</span>
+            :
             <span onClick={()=>setLogin(true)}>로그인/회원가입</span>
+            }
         </S.Header>
         {onlogin ?
             <LoginBorder />

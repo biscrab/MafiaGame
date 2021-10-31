@@ -70,9 +70,9 @@ const GamePage = () => {
   }
   
   useEffect(()=>{
-    /*
     axios.get('http://localhost:1234/chat', params.id)
       .then(res => setMessange(res.data))
+    /*
     axios.get('http://localhost:1234/day', params.id)
       .then(res => setDay(res.data))
     axios.get('http://localhost:1234/member', params.id)
@@ -207,6 +207,10 @@ const GamePage = () => {
   return (
     <>
     <S.Game>
+      <S.TimeHead>
+        <img src={"https://cdn-icons-png.flaticon.com/512/547/547433.png"}></img>
+        <span>00:00</span>
+      </S.TimeHead>
       <S.CDiv>
         {comments.map(
           message => (

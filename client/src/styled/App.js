@@ -6,10 +6,10 @@ export const Header = styled.nav`
     position: fixed;
     top: 0;
     height: 50px;
-    width: 90%;
+    width: 98%;
     display: flex;
     align-items: center;
-    padding: 0px 5%;
+    padding: 0% 1%;
     justify-content: space-between;
     color: white;
     h3{
@@ -22,6 +22,16 @@ export const Header = styled.nav`
         :hover{
             cursor: pointer;
         } 
+    }
+
+    div{
+        display: flex;
+        align-items: center;
+    }
+
+    img{
+        height: 30px;
+        padding-right: 5px;
     }
 `
 
@@ -43,7 +53,7 @@ export const MyChat = styled.div`
     text-align: center;
     margin-bottom: 10px;
     margin-right: 10px;
-    height: 30px;
+    height: 40px;
 `
 
 export const Chat = styled.span`
@@ -60,6 +70,24 @@ export const Chat = styled.span`
 export const Game = styled.body`
 `
 
+export const TimeHead = styled.div`
+    position: fixed;
+    top: 60px;
+    display: flex;
+    align-items: center;
+    padding-left: 1%;
+
+    img{
+        height: 25px;
+    }
+
+    span{
+        color: gray;
+        font-size: 18px;
+        padding-left: 5px;
+    }
+`
+
 export const CUDiv = styled.div`
     position: relative;
     top: 50px;
@@ -74,10 +102,12 @@ export const CDiv = styled.div`
     display: flex;
     flex-direction: column;
     padding: 20px;
+    position: relative;
+    top: 90px;
 `
 
 export const CImg = styled.img`
-    height: 50px;
+    height: 40px;
 `
 
 export const GameStart = styled.button`
@@ -99,6 +129,9 @@ export const Info = styled.div`
 export const Time = styled.div`
     display: flex;
     justify-content: flex-end;
+    position: relative;
+    top: 2px;
+    padding-right: 1%;
 `
 
 export const TButton = styled.button`
@@ -106,9 +139,8 @@ export const TButton = styled.button`
     border: 0;
     outline: 0;
     height: 40px;
-    border-radius: 5px;
+    border-radius: 4px;
     width: 100px;
-    margin-left: 2px;
 
     :hover{
         background-color: blueviolet;

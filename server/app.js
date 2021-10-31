@@ -5,7 +5,6 @@ let jwt = require("jsonwebtoken");
 var server = require('http').createServer(app);
 const mysql = require('mysql');
 const cors = require('cors');
-const { resolve } = require('path/posix');
 app.use(cors())
 const io = require('socket.io')(server, {
     cors: {
@@ -30,9 +29,6 @@ io.on('connection', function(socket) {
         console.log(data);
         socket.join(data);
     }) 
-    socket.on("disconnect", (data) => {
-        socket.leave(data);
-    })
     socket.on("message", (data) => {
         //let life = checkDeath(message.id, message.name);
         //if(life === 1){
@@ -43,6 +39,12 @@ io.on('connection', function(socket) {
         db.query(`INSERT ${data.id}_chat (contents, name) VALUE (${data.contents}, ${data.user})`)
     })
 });
+
+/*
+    socket.on("disconnect", (data) => {
+        socket.leave(data);
+    })
+*/
 
 server.listen(1234, function () {
     console.log('Example app listening on port', 1234);
@@ -72,8 +74,6 @@ mysql.connect(url, {useNewUrlParser: true});
 app.listen(1234, function(){
     console.log('server opened');
 });*/
-
-const SECRET_KEY="XOZUhcOIiv7lt6avsdm6D7asdWcRB5dhqX";
 
 app.post('/login', function(req, res){
     db.connect();
@@ -120,14 +120,19 @@ function checkDeath(id, name){
 function checkLogin(token){
     return new Promise((resolve, reject) =>{
     var v = jwt.verify(token, 'apple');
-    db.query(`SELECT * FROM user WHERE name=${v.name} and password=${v.password}`, function(err, rows){
-        if(rows){
-            resolve(true);
-        }
-        else{
-            resolve(false);
-        }
-    })
+    if(v){
+        db.query(`SELECT * FROM user WHERE name=${v.name} and password=${v.password}`, function(err, rows){
+            if(rows){
+                resolve(true);
+            }
+            else{
+                resolve(false);
+            }
+        })
+    }
+    else{
+        resolve(false);
+    }
     });
 }
 
@@ -139,9 +144,14 @@ app.get('/check', function(req, res){
 //오류
 function getUser(token) {
     return new Promise((resolve, reject) => {
-    var user = jwt.verify(token, 'apple');
-    console.log(token);
-    resolve(user);
+        if(user){
+            var user = jwt.verify(token, 'apple');
+            console.log(user);
+            resolve(user);
+        }
+        else{
+            resolve(false);
+        }
     })
 }
 
@@ -524,11 +534,16 @@ app.get('/test2', function(req, res){
     db.end();
 })
 
-app.get('/user', function(req, res){
+app.get('/user', async(req, res) => {
     //var user = getUser(req.headers.authorization);
     //res.json(user);
-    var user = getUser(req.headers.authorization.substring(7));
-    res.json(user);
+    var user = await getUser(req.headers.authorization.substring(7));
+    if(user){
+        res.json(user.name);
+    }
+    else {
+        res.json("error");
+    }
 })
 
 app.get('/chat', function(req, res){
