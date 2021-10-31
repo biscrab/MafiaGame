@@ -14,10 +14,11 @@ const Header = () => {
 
     let history = useHistory();
 
+    /*
     useEffect(()=>{
         axios.get('http://localhost:1234/user')
             .then(res => setName(res));
-    },[])
+    },[])*/
 
     const LoginBorder = () => {
 

@@ -79,10 +79,6 @@ const GamePage = () => {
       .then(res => setUser(res.data))*/
   })
 
-  useEffect(()=>{
-    //setOnelect(true);
-  },[day])
-
   const sendMessage = () => {
     if(messange){
       socket.emit("message", {id: params.id, contents: messange, user: "1"});

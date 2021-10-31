@@ -11,7 +11,7 @@ const MainPage = () => {
     const [rlist, setRlist] = useState([]);
     const [oncreate, setOncreate] = useState(false);
     const [room, setRoom] = useState({password: "", admin: localStorage.name, name: "", max: 8})
-
+    
     /*
     useEffect(()=>{
         axios.get('http://localhost:1234/room')
