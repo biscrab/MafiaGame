@@ -72,10 +72,10 @@ export const Game = styled.div`
 
 export const TimeHead = styled.div`
     position: fixed;
-    top: 60px;
+    top: 90px;
     display: flex;
     align-items: center;
-    padding-left: 1%;
+    padding-left: 10px;
 
     img{
         height: 25px;
@@ -86,6 +86,33 @@ export const TimeHead = styled.div`
         font-size: 18px;
         padding-left: 5px;
     }
+`
+
+export const NameDiv = styled.div`
+    display: flex;
+    padding-left: 5px;
+    width: 100%;
+    position: fixed;
+    top: 50px;
+    background-color: rgba(255, 255, 255, 0.3);
+`
+
+export const Name = styled.div`
+    background-color: darkgray;
+    border-radius: 5px;
+    width: 60px;
+    text-align: center;
+    margin: 5px;
+`
+
+export const MName = styled.div`
+    background-color: black;
+    color: red;
+    background-color: ${props => props.color};
+    border-radius: 5px;
+    width: 60px;
+    text-align: center;
+    margin: 5px;
 `
 
 export const CUDiv = styled.div`
@@ -136,9 +163,8 @@ export const Time = styled.div`
         border: 0;
         outline: 0;
         height: 40px;
-        border-radius: 4px;
+        border-radius: 4px 4px 0px 0px;
         width: 150px;
-        margin-left: 2px;
 
         :hover{
             background-color: blueviolet;

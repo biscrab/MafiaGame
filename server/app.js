@@ -52,29 +52,9 @@ server.listen(1234, function () {
 });
 
 function chat(data) {
-    /*
-    fs.existsSync(`chat/${data.name}_chat.json`, function(exists){
-        console.log(exists);
-        if(exists){
-            let pre;
-            fs.readFile(`chat/${data.name}_chat.json`, 'utf-8', function(err, d){
-                pre = d;
-            })
-            fs.rename(()=>{
-                fs.writeFile(`chat/${data.name}_chat.json`, JSON.stringify([...pre, {name: data.user, contents: data.contents}]), 'utf8')
-            })
-        }
-        else{
-            fs.writeFile(`chat/${data.name}_chat.json`, JSON.stringify([{name: data.user, contents: data.contents}]))
-        }
-    })*/
-    fs.writeFile(`chat/${data.name}_chat.json`, JSON.stringify([{name: data.user, contents: data.contents}]), function(err){ 
-        if (err === null) {
-            console.log('success'); 
-        } 
-        else {
-             console.log('fail'); } 
-    });
+    db.connect();
+        db.query(`INSERT INTO ${data.name}_chat (name, contents) VALUE (${data.user}, ${data.contents})`)
+    db.end();
 }
 
 // Add headers before the routes are defined
@@ -223,10 +203,9 @@ app.post('/room', async(req, res) => {
                     res.json("이미 존재하는 이름 입니다.")
                 }
             });
-            //db.query(`CREATE TABLE ${req.body.name}_chat (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
-            fs.writeFileSync(`${req.body.name}_chat`);
+            db.query(`CREATE TABLE ${req.body.name}_chat (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
+            //fs.writeFileSync(`${req.body.name}_chat`);
             db.query(`INSERT INTO ${req.body.name} (name) VALUES (${user})`)
-            db.query('CREATE TABLE hz_member (mb_name VARCHAR(255), mb_level VARCHAR(255)');
             db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [user]);
             res.json("성공");
         db.end();
@@ -640,8 +619,37 @@ app.post('/chat', function(req, res){
 })
 
 app.get('/chat', function(req, res){
-    fs.readFile(`chat/${req.body.name}_chat.json`, 'utf8', function(err, data){
+    /*fs.readFile(`chat/${req.body.name}_chat.json`, 'utf8', function(err, data){
         if(err) {throw error};
         res.json(data);
-    });
+    });*/
+    db.connect();
+    db.query(`SELECT * from ${req.body.name}_chat`, function(err, rows){
+        res.json(rows);
+    })
+    db.end();
 })
+
+    /*
+    fs.existsSync(`chat/${data.name}_chat.json`, function(exists){
+        console.log(exists);
+        if(exists){
+            let pre;
+            fs.readFile(`chat/${data.name}_chat.json`, 'utf-8', function(err, d){
+                pre = d;
+            })
+            fs.rename(()=>{
+                fs.writeFile(`chat/${data.name}_chat.json`, JSON.stringify([...pre, {name: data.user, contents: data.contents}]), 'utf8')
+            })
+        }
+        else{
+            fs.writeFile(`chat/${data.name}_chat.json`, JSON.stringify([{name: data.user, contents: data.contents}]))
+        }
+    })*/
+    /*fs.writeFile(`chat/${data.name}_chat.json`, JSON.stringify([{name: data.user, contents: data.contents}]), function(err){ 
+        if (err === null) {
+            console.log('success'); 
+        } 
+        else {
+             console.log('fail'); } 
+    });*/

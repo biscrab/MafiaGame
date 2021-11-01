@@ -25,9 +25,9 @@ const GamePage = () => {
 
   const [onheal, setHeal] = useState(false);
 
-  const [day, setDay] = useState();
+  const [day, setDay] = useState(0);
 
-  const [job, setJob] = useState();
+  const [job, setJob] = useState(1);
 
   const [elected, setElected] = useState(false);
 
@@ -82,7 +82,6 @@ const GamePage = () => {
       .then(res => setUser(res.data))
   })*/
 
-  /*
   useEffect(()=>{
     setSelect("");
     if(day === 0){
@@ -92,7 +91,7 @@ const GamePage = () => {
     else{
       document.body.style.backgroundColor = "black";
     }
-  },[day])*/
+  },[day])
 
   const sendMessage = () => {
     if(messange){
@@ -232,19 +231,39 @@ const GamePage = () => {
   }
 
   const Action = () => {
+    const j = ["살인", "조사", "치료"]
+    return(
+      <button>{j[job-1]}</button>
+    )
+  }
+
+  const NameBorder = () => {
     if(job === 1){
       return(
-        <button>살인</button>
-      )
+      <>
+      {user.map(
+        i => (
+          <>
+          {i.job === 1 ?
+            <S.MName>{i.name}</S.MName>
+            :
+            <S.Name>{i.name}</S.Name>
+          }
+          </>
+        )
+      )}
+      </>
+      );
     }
-    else if(job === 2){
+    else{
       return(
-        <button>조사</button>
-      )
-    }
-    else if(job === 3){
-      return(
-        <button>치료</button>
+      <>
+      {user.map(
+        i => (
+          <S.Name>{i.name}</S.Name>
+        )
+      )}
+      </>
       )
     }
   }
@@ -253,18 +272,21 @@ const GamePage = () => {
     <>
     <S.Game>
       <S.TimeHead>
-        {1 ?
+        {day === 1 ?
         <>
         <img src={"https://cdn-icons-png.flaticon.com/512/547/547433.png"}></img>
         <span>밤</span>
         </>
         :
         <>
-        <img src={""}></img>
-        <span></span>
+        <img src={"https://cdn-icons-png.flaticon.com/512/3917/3917805.png"}></img>
+        <span>낮</span>
         </>
         }
       </S.TimeHead>
+      <S.NameDiv>
+        <NameBorder />
+      </S.NameDiv>
       <S.CDiv>
         {comments.map(
           message => (
@@ -287,11 +309,7 @@ const GamePage = () => {
           {day === 0 ?
             <button onClick={()=>startElect()}>투표하기</button>
             :
-            <>
-            {
               <Action />
-            }
-            </>
           }
           <button onClick={()=>gameStart()}>게임시작</button>
         </S.Time>
