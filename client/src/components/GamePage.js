@@ -3,7 +3,6 @@ import React,{useEffect, useState} from 'react'
 import { useParams, useHistory } from 'react-router-dom';
 import * as S from '../styled/App'
 import io from 'socket.io-client'
-import e from 'express';
 
 const GamePage = () => {
 
@@ -46,8 +45,8 @@ const GamePage = () => {
     setComments([...comments, {id: data.id, contents: data.contents, user: data.user}]);
   })
 
+  /*
   useEffect(()=>{
-    /*
       axios.post('http://localhost:1234/enter', params.id)
         .then(response => {
           if(response.data.password){
@@ -60,11 +59,11 @@ const GamePage = () => {
         .catch(error => {
           history.push("/");
           alert("존재하지 않는 방 입니다.");
-        })*/
+        })
         socket.emit("join", params.id);
         axios.get('http://localhost:1234/job')
           .then(res => setJob(res.data))
-  },[])
+  },[])*/
 
   const onKeyPress = (e) => {
     if(e.key === "Enter"){
@@ -72,15 +71,28 @@ const GamePage = () => {
     }
   }
   
+  /*
   useEffect(()=>{
     axios.get('http://localhost:1234/chat', params.id)
       .then(res => setMessange(res.data))
-    /*
+    
     axios.get('http://localhost:1234/day', params.id)
       .then(res => setDay(res.data))
     axios.get('http://localhost:1234/member', params.id)
-      .then(res => setUser(res.data))*/
-  })
+      .then(res => setUser(res.data))
+  })*/
+
+  /*
+  useEffect(()=>{
+    setSelect("");
+    if(day === 0){
+      setElected(false);
+      document.body.style.backgroundColor = "#eeeeee";
+    }
+    else{
+      document.body.style.backgroundColor = "black";
+    }
+  },[day])*/
 
   const sendMessage = () => {
     if(messange){
@@ -106,14 +118,21 @@ const GamePage = () => {
     );
   }
 
-  function elect(item) {
-    setSelect(item);
+  function elect(i) {
+    setSelect(i);
     setOnelect(false);
+    setElected(true);
   }
 
   function startElect() {
     if(day === 0){
-
+      if(elected){
+        alert("이미 투표 하셨습니다.")
+      }
+      else{
+        axios.post('http://localhost:1234/vote', item)
+          .then(res => setElected(false))
+      }
     }
     else{
       alert("지금은 투표시간이 아닙니다.")
@@ -197,7 +216,7 @@ const GamePage = () => {
         <S.LeaderBorder>
           <S.LX onClick={()=>setOnleader(false)}>X</S.LX>
           <S.UserUl>
-          <S.LH>🏆 마피아 우승 🏆</S.LH>
+          <S.LH>🏆 {} 우승 🏆</S.LH>
           {user.map(
             item => (
               <S.UserList>
@@ -241,7 +260,7 @@ const GamePage = () => {
         </>
         :
         <>
-        <img></img>
+        <img src={""}></img>
         <span></span>
         </>
         }

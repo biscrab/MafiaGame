@@ -52,20 +52,29 @@ server.listen(1234, function () {
 });
 
 function chat(data) {
-    fs.exists(`${data.name}_chat.json`, function(exists){
+    /*
+    fs.existsSync(`chat/${data.name}_chat.json`, function(exists){
+        console.log(exists);
         if(exists){
             let pre;
-            fs.readFile(`${data.name}_chat.json`, 'utf-8', function(err, d){
+            fs.readFile(`chat/${data.name}_chat.json`, 'utf-8', function(err, d){
                 pre = d;
             })
             fs.rename(()=>{
-                fs.writeFile(`${data.name}_chat.json`, JSON.stringify([...pre, {name: data.user, contents: data.contents}]), 'utf8')
+                fs.writeFile(`chat/${data.name}_chat.json`, JSON.stringify([...pre, {name: data.user, contents: data.contents}]), 'utf8')
             })
         }
         else{
-            fs.writeFile(`${data.name}_chat.json`, JSON.stringify([{name: data.user, contents: data.contents}]))
+            fs.writeFile(`chat/${data.name}_chat.json`, JSON.stringify([{name: data.user, contents: data.contents}]))
         }
-    })
+    })*/
+    fs.writeFile(`chat/${data.name}_chat.json`, JSON.stringify([{name: data.user, contents: data.contents}]), function(err){ 
+        if (err === null) {
+            console.log('success'); 
+        } 
+        else {
+             console.log('fail'); } 
+    });
 }
 
 // Add headers before the routes are defined
@@ -293,18 +302,15 @@ app.post('/leave', function(req, res){
             db.query('DROP TABLE ?', [chat])
         }
         else{
+            db.query('DELETE FROM ? WHERE name = ?', [member, req.body.name])
             db.query(`SELECT admin from ${req.body.name}_member WHERE (name = ${req.body.user})`, function(err, rows){
-                r = (Number(Object.keys(rows)[0]))
-                if(r === 1){
                     db.query(`SELECT id FROM ${req.body.name}_member ORDER BY id`, function(err, rows){
-                        const first = rows;
-                        db.query(`UPDATE ${req.body.name}_member SET admin = 1 WHERE (id = first)`);
+                        const first = Number(rows[0].id);
+                        db.query(`UPDATE ${req.body.name}_member SET admin = 1 WHERE (id = ${first})`);
                     })
-                }
-            })
-        }
-        db.query('DELETE FROM ? WHERE name = ?', [member, req.body.name])
-    }) 
+                })
+            }
+        }) 
 })
 
 app.delete('/room', function(req, res){
@@ -606,22 +612,35 @@ app.post('/increase', function(req, res){
 })
 
 app.post('/test5', function(req, res){
-    fs.writeFile('test.json','파일에들어갈내용', function(err){ 
+    fs.writeFile('test.json','파일에들어갈내용', 'utf-8', function(err){ 
         if (err === null) {
             console.log('success'); 
         } 
         else {
              console.log('fail'); } 
         });
+        res.json(1);
+})
+
+app.post('/test6', function(req, res){
+    fs.appendFile('test.json','파일에들어갈내용', 'utf-8', function(err){ 
+        if (err === null) {
+            console.log('success'); 
+        } 
+        else {
+             console.log('fail'); } 
+        });
+        res.json(1);
 })
 
 app.post('/chat', function(req, res){
     chat(req.body);
+    console.log(req.body)
     res.json(1);
 })
 
 app.get('/chat', function(req, res){
-    fs.readFile(`${req.body.name}_chat.json`, 'utf8', function(err, data){
+    fs.readFile(`chat/${req.body.name}_chat.json`, 'utf8', function(err, data){
         if(err) {throw error};
         res.json(data);
     });
