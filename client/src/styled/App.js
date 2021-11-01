@@ -38,22 +38,25 @@ export const Header = styled.nav`
 export const ChatDiv = styled.div`
     display: flex;
     justify-content: flex-start;
+    margin-bottom: 10px;
+    align-items: center;
 `
 
 export const MyChatDiv = styled.div`
     display: flex;
     justify-content: flex-end;
     margin-bottom: 10px;
+    align-items: center;
 `
 
-export const MyChat = styled.div`
+export const MyChat = styled.span`
     background-color: blueviolet;
     color: white;
     border-radius: 5px;
+    padding: 10px;
+    width: 50px;
     text-align: center;
-    margin-bottom: 10px;
     margin-right: 10px;
-    height: 40px;
 `
 
 export const Chat = styled.span`
@@ -64,7 +67,6 @@ export const Chat = styled.span`
     padding: 10px;
     width: 50px;
     margin-left: 10px;
-    height: 30px;
 `
 
 export const Game = styled.div`
@@ -130,7 +132,7 @@ export const CDiv = styled.div`
     flex-direction: column;
     padding: 20px;
     position: relative;
-    top: 90px;
+    top: 120px;
 `
 
 export const CImg = styled.img`

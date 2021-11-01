@@ -31,6 +31,9 @@ const GamePage = () => {
 
   const [elected, setElected] = useState(false);
 
+  const [name, setName] = useState();
+
+  /*
   const socket = io("http://localhost:1234");
   socket.on("connection", () => { 
     console.log("connected"); 
@@ -43,7 +46,7 @@ const GamePage = () => {
   socket.on("chat", (data)=>{
     console.log(data);
     setComments([...comments, {id: data.id, contents: data.contents, user: data.user}]);
-  })
+  })*/
 
   /*
   useEffect(()=>{
@@ -71,16 +74,24 @@ const GamePage = () => {
     }
   }
   
-  /*
   useEffect(()=>{
-    axios.get('http://localhost:1234/chat', params.id)
-      .then(res => setMessange(res.data))
-    
+      axios.post('http://localhost:1234/getchat', {name: `${params.id}`})
+      .then(res => { 
+        //setComments(res.data);
+        setComments([...res.data]);
+      })
+      axios.get('http://localhost:1234/user')
+      .then(res => { 
+        //setComments(res.data);
+        setName(res.data)
+      })
+  })
+
+      /*  
     axios.get('http://localhost:1234/day', params.id)
       .then(res => setDay(res.data))
     axios.get('http://localhost:1234/member', params.id)
-      .then(res => setUser(res.data))
-  })*/
+      .then(res => setUser(res.data))*/
 
   useEffect(()=>{
     setSelect("");
@@ -95,7 +106,7 @@ const GamePage = () => {
 
   const sendMessage = () => {
     if(messange){
-      socket.emit("message", {id: params.id, contents: messange, user: "1"});
+      //socket.emit("message", {id: params.id, contents: messange, user: "1"});
       document.body.scrollTop = document.body.scrollHeight;
     }
   };
@@ -291,13 +302,13 @@ const GamePage = () => {
         {comments.map(
           message => (
             <>
-            {message.user === user ?
+            {message.name === name ?
                 <S.MyChatDiv>
-                    <S.MyChat>{message.contents}</S.MyChat><S.CImg src={"https://w7.pngwing.com/pngs/1/964/png-transparent-user-profile-computer-icons-login-profile-icon-police-officer-black-avatar.png"}></S.CImg>
+                    <S.MyChat>{message.chat}</S.MyChat><S.CImg src={"https://w7.pngwing.com/pngs/1/964/png-transparent-user-profile-computer-icons-login-profile-icon-police-officer-black-avatar.png"}></S.CImg>
                 </S.MyChatDiv>
                 :
                 <S.ChatDiv>
-                    <S.CImg src={"https://w7.pngwing.com/pngs/1/964/png-transparent-user-profile-computer-icons-login-profile-icon-police-officer-black-avatar.png"}></S.CImg><S.Chat>{message.contents}</S.Chat>
+                    <S.CImg src={"https://w7.pngwing.com/pngs/1/964/png-transparent-user-profile-computer-icons-login-profile-icon-police-officer-black-avatar.png"}></S.CImg><S.Chat>{message.name}: {message.chat}</S.Chat>
                 </S.ChatDiv>
             }
             </>   

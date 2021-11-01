@@ -7,10 +7,11 @@ const mysql = require('mysql');
 const cors = require('cors');
 const fs = require('fs');
 app.use(cors())
+
 const io = require('socket.io')(server, {
     cors: {
       origin: "*",
-      methods: ["GET", "POST"],
+      methods: ["GET", "POST", "DELETE"],
     }});
 
 const db = mysql.createConnection({
@@ -20,6 +21,8 @@ const db = mysql.createConnection({
     password: 'dongseopfuck1',
     database: "sys"
 })
+
+db.connect();
 
 io.on('connection', function(socket) {
     socket.emit("연결");
@@ -52,9 +55,7 @@ server.listen(1234, function () {
 });
 
 function chat(data) {
-    db.connect();
-        db.query(`INSERT INTO ${data.name}_chat (name, contents) VALUE (${data.user}, ${data.contents})`)
-    db.end();
+        db.query(`INSERT INTO ${data.name}_chat (name, chat) VALUE (${data.user}, ${data.contents})`)
 }
 
 // Add headers before the routes are defined
@@ -77,7 +78,6 @@ app.listen(1234, function(){
 });*/
 
 app.post('/login', function(req, res){
-    db.connect();
     db.query(`SELECT * FROM user WHERE name=? and password=?`, [req.body.name, req.body.password], function(err, rows){
         if(err){
             res.status(406);
@@ -89,11 +89,9 @@ app.post('/login', function(req, res){
             res.json(token);
         }
     })
-    db.end();
 })
 
 function check(req) {
-    db.connect();
     db.query(`SELECT * FROM user WHERE name=?`, [req.body.name]), function(err, rows){
         if(rows){
             return(false);
@@ -102,11 +100,9 @@ function check(req) {
             return(true);
         }
     }
-    db.end();
 }
 
 function checkDeath(id, name){
-    db.connect();
     db.query("SELECT status FROM ?_member WHERE name=?", [id, name], function(err, rows){
         if(rows){
             return(rows);
@@ -115,7 +111,6 @@ function checkDeath(id, name){
             return(false);
         }
     })
-    db.end();
 }
 
 function checkLogin(token){
@@ -145,14 +140,9 @@ app.get('/check', function(req, res){
 //오류
 function getUser(token) {
     return new Promise((resolve, reject) => {
-        if(user){
-            var user = jwt.verify(token, 'apple');
-            console.log(user);
-            resolve(user);
-        }
-        else{
-            resolve(false);
-        }
+        var user = jwt.verify(token, 'apple');
+        console.log(user);
+        resolve(user);
     })
 }
 
@@ -163,7 +153,6 @@ function getJob(req){
 }
 
 app.post('/signup', async(req, res) => {
-    db.connect();
     var check = await getMember(req);
     if(check){
     db.query(`INSERT INTO user (name, password) VALUES (?, ?);`, [req.body.name, req.body.password], function(error, results, fields){
@@ -178,37 +167,34 @@ app.post('/signup', async(req, res) => {
     else{
         res.json("중복");
     }
-    db.end();
 });   
 
 app.post('/room', async(req, res) => {
-    db.connect();
     var logined = await checkLogin(req.headers.authorization.substring(7));
     if(logined){
         let user = await getUser(req.headers.authorization.substring(7));
-            db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, Number(req.body.max)])
-            db.query(`CREATE TABLE ${req.body.name}_member (
-               status INT NULL DEFAULT 1,
-                 name VARCHAR(45) NOT NULL,
-                job INT NULL DEFAULT 0,
-                admin INT NULL DEFAULT 0,
-                voted INT NULL DEFAULT 0,
-                day INT DEFAULT 1,
-                id INT NULL DEFAULT 0,
-                PRIMARY KEY (name),
-                UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,
-                UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE)`,
+        db.query('INSERT INTO room (name, password, max) VALUES (?, ?, ?)', [req.body.name, req.body.password, Number(req.body.max)])
+        db.query(`CREATE TABLE ${req.body.name}_member (
+            status INT NULL DEFAULT 1,
+            name VARCHAR(45) NOT NULL,
+            job INT NULL DEFAULT 0,
+            admin INT NULL DEFAULT 0,
+            voted INT NULL DEFAULT 0,
+            id INT NULL DEFAULT 0,
+            PRIMARY KEY (name),
+            UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,
+            UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE)`,
             function(err, rows){
                 if(err){
                     res.json("이미 존재하는 이름 입니다.")
                 }
-            });
-            db.query(`CREATE TABLE ${req.body.name}_chat (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
-            //fs.writeFileSync(`${req.body.name}_chat`);
-            db.query(`INSERT INTO ${req.body.name} (name) VALUES (${user})`)
-            db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [user]);
-            res.json("성공");
-        db.end();
+        });
+        db.query(`CREATE TABLE ${req.body.name}_chat (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
+        //fs.writeFileSync(`${req.body.name}_chat`);
+        db.query(`INSERT INTO ${req.body.name}_member (name) VALUES (${user})`)
+        db.query(`UPDATE user SET ingame = 1 WHERE (name = ${user});`);
+        chat({contents: `${user}님이 입장하셨습니다.`, name: req.body.name, user: user})
+        res.json("성공");
     }
     else{
         res.status = 401;
@@ -238,7 +224,6 @@ app.post('/enter', function(req, res){
     let status;
     let ingame;
     
-    db.connect();
     if(checkLogin(req.headers.authorization)){
     db.query('SELECT * from room WHERE (name = ?)', [req.body.name], function(err, rows){
         max = Number(rows[0].max);
@@ -265,14 +250,12 @@ app.post('/enter', function(req, res){
         }
     })
     }}
-    db.end();
 })
 
 app.post('/leave', function(req, res){
     let member = `${req.body.name}_member`;
     let chat = `${req.body.name}_chat`;
     let r;
-    db.connect();
     db.query('SELECT COUNT(*) from ?', [member], function(err, rows){
         r = (Number(Object.keys(rows)[0]));
         if(r === 1){
@@ -329,7 +312,7 @@ app.post('/detect', function(req, res){
     let job = getJob(req);
         if(job === 2){
             //db.query(`UPDATE ${req.body.name}`)
-            db.connect();
+    
                 db.query(`SELECT * FROM job WHERE name=${req.body.target}`, function(err, rows){
                     var r = Number(rows[0].job);
                     if(r === 1){
@@ -339,7 +322,7 @@ app.post('/detect', function(req, res){
                         res.json(false);
                     }
                 })
-            db.end();
+    
         }
     }
 })
@@ -381,7 +364,6 @@ app.get('/member', function(req, res){
 
 app.post('/day', function(req, res){
     var day;
-    db.connect();
     db.query(`UPDATE ${req.body.name}_member status=1 WHERE (status = 3)`)
     gameOver();
     if(time > 0){
@@ -399,7 +381,6 @@ app.post('/day', function(req, res){
             db.query(`UPDATE room day = 1 where name=${req.body.name}`)
         }
     }
-    db.end();
 })
 
 app.post('/night', function(req, res){
@@ -410,11 +391,9 @@ app.post('/night', function(req, res){
 })
 
 function time(name) {
-    db.connect();
         db.query(`SELECT time from room where name=${name}`, function(err, rows){
             return(Number(rows[0].time))
         })
-    db.end();
 }
 
 app.get('/time', function(req, res){
@@ -422,7 +401,6 @@ app.get('/time', function(req, res){
 })
 
 app.post('/start', function(req, res){
-    db.connect();
     if(checkLogin(req.headers.authorization)){
         var user = getUser(req.headers.authorization);
         var admin;
@@ -470,13 +448,11 @@ app.post('/start', function(req, res){
             })
         }
     }
-    db.end();
 })
 
 function gameOver(){
     var citizen;
     var mafia;
-    db.connect();
     db.query(`SELECT * from ${req.body.member} where job = 1`, function(err, rows){
         mafia = Number(rows[Object.keys(rows)[0]])
     })
@@ -490,15 +466,12 @@ function gameOver(){
         db.query(`TRUNCATE ${req.body.name}_chat`);
         chat({contents: "시민이 승리하였습니다."})
     }
-    db.end();
 }
 
 app.post('/vote', function(req, res){
-    db.connect();
         db.query(`UPDATE ${req.body.name}_member voted += 1 WHERE (name=${req.body.user})`);
         let mes = {name: req.body.name, contents: `${req.body.user} 한 표`, user: "사회자"}
         chat(mes);
-    db.end();
 })
 
 function judjement(name){
@@ -506,7 +479,6 @@ function judjement(name){
     let voted;
     let target;
     var mes;
-    db.connect();
     db.query(`SELECT * from ${name}_member ORDER BY voted`, function(err, rows){
         voted = Number(rows[0].voted);
         target = Number(rows[0].target);
@@ -521,72 +493,63 @@ function judjement(name){
         mes = {name: name, contents: `과반수를 넘지 못해 투표가 무효가 되었습니다.`, user: "사회자"}
         chat(mes);
     }
-    db.end();
 }
 
 app.get('/test2', function(req, res){
-    db.connect();
     db.query(`CREATE TABLE ${req.body.name}_member (status INT NULL DEFAULT 1, name VARCHAR(45) NOT NULL, job INT NULL DEFAULT 0, admin INT NULL DEFAULT 0, id INT NULL DEFAULT 0, PRIMARY KEY (name),  UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,  UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE);`);
     res.json("1");
-    db.end();
 })
 
 app.get('/user', async(req, res) => {
     //var user = getUser(req.headers.authorization);
     //res.json(user);
     var user = await getUser(req.headers.authorization.substring(7));
+    console.log(user);
     if(user){
         res.json(user.name);
     }
     else {
-        res.json("error");
+        res.json(false);
     }
 })
 
-app.get('/chat', function(req, res){
-    db.connect();
+app.get('/getchat', function(req, res){
     db.query(`SELECT * from ${req.body.name}_chat`, function(err, rows){
         res.json(rows);
     })
-    db.end();
 })
 
 app.get('/job', function(req, res){
-    db.connect();
     var name = getUser(req.headers.authorization)
     db.query(`SELECT job from ${req.body.name}_member where name=${name}`, function(err, rows){
         res.json(Number(rows[0].job));
     })
-    db.end();
 })
 
 function getUtime(req) {
-    db.connect();
     db.query(`SELECT time from ${req.body.name}_member where name=${req.body.user}`, function(err, rows){
         return(Number(rows[0].time))
     })
-    db.end();
 }
 
 app.post('/decress', function(req, res){
     var utime = getUtime(req);
     if(utime === 0){
-        db.connect();
+
         var time = 300 / getMember()
         db.query(`UPDATE room time = time - ${time} where name=${req.body.user}`)
         db.query(`UPDATE ${req.body.name}_member time=1 where name=${req.body.user}`)
-        db.end();
+
     }
 })
 
 app.post('/increase', function(req, res){
     var utime = getUtime(req);
     if(utime === 0){
-    db.connect();
         var time = 300 / getMember()
         db.query(`UPDATE room time = time + ${time} where name=${req.body.name}`)
         db.query(`UPDATE ${req.body.name}_member time=1 where name=${req.body.user}`)
-        db.end();
+
     }
 })
 
@@ -623,11 +586,9 @@ app.get('/chat', function(req, res){
         if(err) {throw error};
         res.json(data);
     });*/
-    db.connect();
     db.query(`SELECT * from ${req.body.name}_chat`, function(err, rows){
         res.json(rows);
     })
-    db.end();
 })
 
     /*
