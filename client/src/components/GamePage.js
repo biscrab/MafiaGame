@@ -3,6 +3,7 @@ import React,{useEffect, useState} from 'react'
 import { useParams, useHistory } from 'react-router-dom';
 import * as S from '../styled/App'
 import io from 'socket.io-client'
+import e from 'express';
 
 const GamePage = () => {
 
@@ -28,6 +29,8 @@ const GamePage = () => {
   const [day, setDay] = useState();
 
   const [job, setJob] = useState();
+
+  const [elected, setElected] = useState(false);
 
   const socket = io("http://localhost:1234");
   socket.on("connection", () => { 
@@ -106,6 +109,15 @@ const GamePage = () => {
   function elect(item) {
     setSelect(item);
     setOnelect(false);
+  }
+
+  function startElect() {
+    if(day === 0){
+
+    }
+    else{
+      alert("지금은 투표시간이 아닙니다.")
+    }
   }
   
   const ElectBorder = () => {
@@ -200,12 +212,39 @@ const GamePage = () => {
     )
   }
 
+  const Action = () => {
+    if(job === 1){
+      return(
+        <button>살인</button>
+      )
+    }
+    else if(job === 2){
+      return(
+        <button>조사</button>
+      )
+    }
+    else if(job === 3){
+      return(
+        <button>치료</button>
+      )
+    }
+  }
+
   return (
     <>
     <S.Game>
       <S.TimeHead>
+        {1 ?
+        <>
         <img src={"https://cdn-icons-png.flaticon.com/512/547/547433.png"}></img>
-        <span>00:00</span>
+        <span>밤</span>
+        </>
+        :
+        <>
+        <img></img>
+        <span></span>
+        </>
+        }
       </S.TimeHead>
       <S.CDiv>
         {comments.map(
@@ -226,8 +265,16 @@ const GamePage = () => {
       </S.CDiv>
       <S.Info>
         <S.Time>
-          <S.TButton>시간 단축</S.TButton>
-          <S.TButton>시간 연장</S.TButton>
+          {day === 0 ?
+            <button onClick={()=>startElect()}>투표하기</button>
+            :
+            <>
+            {
+              <Action />
+            }
+            </>
+          }
+          <button onClick={()=>gameStart()}>게임시작</button>
         </S.Time>
       <S.IDiv>
         <S.Textarea onChange={(e)=>setMessange(e.target.value)} onKeyPress={(e)=>onKeyPress(e)} value={messange}/>

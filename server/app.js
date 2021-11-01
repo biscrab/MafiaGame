@@ -5,6 +5,7 @@ let jwt = require("jsonwebtoken");
 var server = require('http').createServer(app);
 const mysql = require('mysql');
 const cors = require('cors');
+const fs = require('fs');
 app.use(cors())
 const io = require('socket.io')(server, {
     cors: {
@@ -51,9 +52,20 @@ server.listen(1234, function () {
 });
 
 function chat(data) {
-    db.connect();
-        db.query(`INSERT INTO ${data.name}_chat (name, contents) VALUE (${data.user}, ${data.contents})`)
-    db.end();
+    fs.exists(`${data.name}_chat.json`, function(exists){
+        if(exists){
+            let pre;
+            fs.readFile(`${data.name}_chat.json`, 'utf-8', function(err, d){
+                pre = d;
+            })
+            fs.rename(()=>{
+                fs.writeFile(`${data.name}_chat.json`, JSON.stringify([...pre, {name: data.user, contents: data.contents}]), 'utf8')
+            })
+        }
+        else{
+            fs.writeFile(`${data.name}_chat.json`, JSON.stringify([{name: data.user, contents: data.contents}]))
+        }
+    })
 }
 
 // Add headers before the routes are defined
@@ -194,7 +206,6 @@ app.post('/room', async(req, res) => {
                 voted INT NULL DEFAULT 0,
                 day INT DEFAULT 1,
                 id INT NULL DEFAULT 0,
-                time INT NULL DEFAULT 0,
                 PRIMARY KEY (name),
                 UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,
                 UNIQUE INDEX id_UNIQUE (id ASC) VISIBLE)`,
@@ -203,7 +214,8 @@ app.post('/room', async(req, res) => {
                     res.json("이미 존재하는 이름 입니다.")
                 }
             });
-            db.query(`CREATE TABLE ${req.body.name}_chat (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
+            //db.query(`CREATE TABLE ${req.body.name}_chat (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
+            fs.writeFileSync(`${req.body.name}_chat`);
             db.query(`INSERT INTO ${req.body.name} (name) VALUES (${user})`)
             db.query('CREATE TABLE hz_member (mb_name VARCHAR(255), mb_level VARCHAR(255)');
             db.query('UPDATE user SET ingame = 1 WHERE (name = ?);', [user]);
@@ -383,7 +395,6 @@ app.get('/member', function(req, res){
 })
 
 app.post('/day', function(req, res){
-    var time;
     var day;
     db.connect();
     db.query(`UPDATE ${req.body.name}_member status=1 WHERE (status = 3)`)
@@ -407,7 +418,6 @@ app.post('/day', function(req, res){
 })
 
 app.post('/night', function(req, res){
-    var time;
     judjement(req.body.name);
     db.query(`UPDATE ${req.body.name}_member voted=0`)
     db.query(`TRUNCATE ${req.body.name}_member`);
@@ -596,8 +606,23 @@ app.post('/increase', function(req, res){
 })
 
 app.post('/test5', function(req, res){
-    db.connect();
-        db.query(`CREATE TABLE ${req.body.name}_chat (chat VARCHAR(45) NOT NULL, name VARCHAR(45) NOT NULL)`)
-    db.end();
+    fs.writeFile('test.json','파일에들어갈내용', function(err){ 
+        if (err === null) {
+            console.log('success'); 
+        } 
+        else {
+             console.log('fail'); } 
+        });
+})
+
+app.post('/chat', function(req, res){
+    chat(req.body);
     res.json(1);
+})
+
+app.get('/chat', function(req, res){
+    fs.readFile(`${req.body.name}_chat.json`, 'utf8', function(err, data){
+        if(err) {throw error};
+        res.json(data);
+    });
 })

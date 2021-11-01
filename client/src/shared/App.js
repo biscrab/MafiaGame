@@ -21,7 +21,7 @@ function App() {
         return unescape(cValue);
         }
 
-    axios.defaults.headers["Authorization"] = getCookie('m-token');
+    axios.defaults.headers["Authorization"] = "Bearer" + getCookie('m-token');
 
     return(
         <>

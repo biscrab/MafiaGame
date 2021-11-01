@@ -67,7 +67,7 @@ export const Chat = styled.span`
     height: 30px;
 `
 
-export const Game = styled.body`
+export const Game = styled.div`
 `
 
 export const TimeHead = styled.div`
@@ -129,22 +129,21 @@ export const Info = styled.div`
 export const Time = styled.div`
     display: flex;
     justify-content: flex-end;
-    position: relative;
-    top: 2px;
     padding-right: 1%;
-`
 
-export const TButton = styled.button`
-    background-color: white;
-    border: 0;
-    outline: 0;
-    height: 40px;
-    border-radius: 4px;
-    width: 100px;
+    button{
+        background-color: white;
+        border: 0;
+        outline: 0;
+        height: 40px;
+        border-radius: 4px;
+        width: 150px;
+        margin-left: 2px;
 
-    :hover{
-        background-color: blueviolet;
-        color: white;
+        :hover{
+            background-color: blueviolet;
+            color: white;
+        }
     }
 `
 
