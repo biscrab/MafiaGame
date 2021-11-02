@@ -14,7 +14,14 @@ const GamePage = () => {
   const [messange, setMessange] = useState();
   const [ipassword, setIpassword] = useState();
   const [onpassword, setOnpassword] = useState();
-  const [user, setUser] = useState([{name: "1", job: 1}, {name: "1", job: 1}, {name: "1", job: 0}, {name: "1", job: 2}, {name: "1", job: 1}, {name: "1", job: 1}, {name: "1", job: 1}]);
+  const [user, setUser] = useState([
+  {name: "1", job: 1, status: 0}, 
+  {name: "1", job: 1, status: 0},
+  {name: "1", job: 0, status: 0},
+  {name: "1", job: 2, status: 0},
+  {name: "1", job: 1, status: 0},
+  {name: "1", job: 1, status: 0},
+  {name: "1", job: 1, status: 1}]);
 
   const [onleader, setOnleader] = useState();
 
@@ -25,7 +32,7 @@ const GamePage = () => {
 
   const [onheal, setHeal] = useState(false);
 
-  const [day, setDay] = useState(0);
+  const [status, setStatus] = useState(0);
 
   const [job, setJob] = useState(1);
 
@@ -33,8 +40,7 @@ const GamePage = () => {
 
   const [name, setName] = useState();
 
-  /*
-  const socket = io("http://localhost:1234");
+  const socket = io("localhost:1234");
   socket.on("connection", () => { 
     console.log("connected"); 
   });
@@ -46,7 +52,7 @@ const GamePage = () => {
   socket.on("chat", (data)=>{
     console.log(data);
     setComments([...comments, {id: data.id, contents: data.contents, user: data.user}]);
-  })*/
+  })
 
   /*
   useEffect(()=>{
@@ -75,16 +81,24 @@ const GamePage = () => {
   }
   
   useEffect(()=>{
-      axios.post('http://localhost:1234/getchat', {name: `${params.id}`})
+      axios.post('http://localhost:1234/getchat', {name: params.id})
       .then(res => { 
         //setComments(res.data);
-        setComments([...res.data]);
+        setComments(res.data);
       })
       axios.get('http://localhost:1234/user')
       .then(res => { 
         //setComments(res.data);
         setName(res.data)
       })
+      axios.post('http://localhost:1234/status', {name: params.id})
+        .then(res => {
+          setStatus(res.data)
+      })
+      axios.post('http://localhost1234/member', {name: params.id})
+        .then(res => {
+          setUser(res.data)
+        })
   })
 
       /*  
@@ -95,14 +109,16 @@ const GamePage = () => {
 
   useEffect(()=>{
     setSelect("");
-    if(day === 0){
-      setElected(false);
-      document.body.style.backgroundColor = "#eeeeee";
-    }
-    else{
+    if(status === 2){
       document.body.style.backgroundColor = "black";
     }
-  },[day])
+    else{
+      document.body.style.backgroundColor = "#eeeeee";
+      if(status === 1){
+        setElected(false);
+      }
+    }
+  },[status])
 
   const sendMessage = () => {
     if(messange){
@@ -135,13 +151,15 @@ const GamePage = () => {
   }
 
   function startElect() {
-    if(day === 0){
+    if(status === 0){
       if(elected){
         alert("이미 투표 하셨습니다.")
       }
       else{
+        alert(1);
+        /*
         axios.post('http://localhost:1234/vote', item)
-          .then(res => setElected(false))
+          .then(res => setElected(false))*/
       }
     }
     else{
@@ -256,9 +274,9 @@ const GamePage = () => {
         i => (
           <>
           {i.job === 1 ?
-            <S.MName>{i.name}</S.MName>
+            <S.MName color={i.status === 0 ? "crimson" : "red"} bgcolor={i.status === 0 ? "rgba(200, 200, 200, 0.3)" : "black"}>{i.name}</S.MName>
             :
-            <S.Name>{i.name}</S.Name>
+            <S.Name color={i.status === 0 ? "darkgray" : "rgb(50, 50, 50)"} bgcolor={i.status === 0 ? "rgba(200, 200, 200, 0.3)" : "rgb(190, 190, 190)"}>{i.name}</S.Name>
           }
           </>
         )
@@ -271,7 +289,7 @@ const GamePage = () => {
       <>
       {user.map(
         i => (
-          <S.Name>{i.name}</S.Name>
+          <S.Name color={i.status === 0 ? "darkgray" : "rgb(50, 50, 50)"} bgcolor={i.status === 0 ? "rgba(200, 200, 200, 0.3)" : "rgb(190, 190, 190)"}>{i.name}</S.Name>
         )
       )}
       </>
@@ -279,25 +297,21 @@ const GamePage = () => {
     }
   }
 
+  var d = ["대기중", "낮", "밤"];
+  var i = ["https://cdn-icons-png.flaticon.com/512/889/889843.png",
+           "https://cdn-icons-png.flaticon.com/512/3917/3917805.png",
+           "https://cdn-icons-png.flaticon.com/512/547/547433.png"]
+
   return (
     <>
     <S.Game>
-      <S.TimeHead>
-        {day === 1 ?
-        <>
-        <img src={"https://cdn-icons-png.flaticon.com/512/547/547433.png"}></img>
-        <span>밤</span>
-        </>
-        :
-        <>
-        <img src={"https://cdn-icons-png.flaticon.com/512/3917/3917805.png"}></img>
-        <span>낮</span>
-        </>
-        }
-      </S.TimeHead>
       <S.NameDiv>
         <NameBorder />
       </S.NameDiv>
+      <S.TimeHead>
+        <img src={i[status]} />
+        <span>{d[status]}</span>
+      </S.TimeHead>
       <S.CDiv>
         {comments.map(
           message => (
@@ -317,7 +331,7 @@ const GamePage = () => {
       </S.CDiv>
       <S.Info>
         <S.Time>
-          {day === 0 ?
+          {status === 0 ?
             <button onClick={()=>startElect()}>투표하기</button>
             :
               <Action />

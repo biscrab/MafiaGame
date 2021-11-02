@@ -5,7 +5,7 @@ export const Header = styled.nav`
     background-color: blueviolet;
     position: fixed;
     top: 0;
-    height: 50px;
+    height: 6%;
     width: 98%;
     display: flex;
     align-items: center;
@@ -74,7 +74,8 @@ export const Game = styled.div`
 
 export const TimeHead = styled.div`
     position: fixed;
-    top: 90px;
+    top: 11%;
+    height: 5%;
     display: flex;
     align-items: center;
     padding-left: 10px;
@@ -95,22 +96,27 @@ export const NameDiv = styled.div`
     padding-left: 5px;
     width: 100%;
     position: fixed;
-    top: 50px;
+    top: 6%;
+    height: 5%;
     background-color: rgba(255, 255, 255, 0.3);
 `
 
 export const Name = styled.div`
     background-color: darkgray;
+    background-color: ${props => props.bgcolor};
     border-radius: 5px;
     width: 60px;
     text-align: center;
     margin: 5px;
+    color: black;
+    color: ${props => props.color};
 `
 
 export const MName = styled.div`
     background-color: black;
     color: red;
-    background-color: ${props => props.color};
+    color: ${props => props.color};
+    background-color: ${props => props.bgcolor};
     border-radius: 5px;
     width: 60px;
     text-align: center;
@@ -128,11 +134,14 @@ export const USpan = styled.span`
 `
 
 export const CDiv = styled.div`
-    display: flex;
     flex-direction: column;
-    padding: 20px;
-    position: relative;
-    top: 120px;
+    padding: 2%;
+    position: fixed;
+    top: 16%;
+    width: 96%;
+    height: 45%;
+    overflow-y: auto;
+    z-index: -1;
 `
 
 export const CImg = styled.img`
@@ -152,6 +161,7 @@ export const GameStart = styled.button`
 export const Info = styled.div`
     position: fixed;
     width: 100%;
+    height: 30%;
     bottom: 0;
 `
 

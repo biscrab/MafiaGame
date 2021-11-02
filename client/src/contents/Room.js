@@ -13,16 +13,21 @@ const Room = ({item}) => {
     }*/
 
     useEffect(()=>{
-        axios.get('http://localhost:1234/member')
+        axios.post('http://localhost:1234/member', {name: item.name})
             .then(res => {
-                console.log(res.data);
+                setMember(res.data);
         })
     })
 
     let history = useHistory();
 
+    function enter(){
+        axios.post('http://loclhost:1234/enter', {name:item.name})
+        history.push(`/game/${item.name}`)
+    }
+
     return(
-        <S.RoomCard onClick={()=>history.push(`/game/${item.name}`)}>
+        <S.RoomCard onClick={()=>enter()}>
             <S.CName>
             <S.Status color={item.status === 0 ? "green" : "red"}>
                 <i class="fas fa-circle fa-xs"></i>

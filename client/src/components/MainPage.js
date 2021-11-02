@@ -12,13 +12,12 @@ const MainPage = () => {
     const [oncreate, setOncreate] = useState(false);
     const [room, setRoom] = useState({password: "", admin: localStorage.name, name: "", max: 8})
     
-    /*
     useEffect(()=>{
         axios.get('http://localhost:1234/room')
-            .then(response => {
-                setRlist([...response.data]);
+            .then(res => {
+                setRlist([...res.data]);
         })
-    })*/
+    })
 
     async function getRoom() {
         const room = await axios.get("http://localhost:1234/room")

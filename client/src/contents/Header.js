@@ -14,11 +14,10 @@ const Header = () => {
 
     let history = useHistory();
 
-    /*
     useEffect(()=>{
         axios.get('http://localhost:1234/user')
-            .then(res => setName(res));
-    },[])*/
+            .then(res => setName(res.data));
+    })
 
     const LoginBorder = () => {
 
@@ -78,7 +77,7 @@ const Header = () => {
             <h3>마피아</h3>
             </div>
             {name ?
-            <span>{name}</span>
+            <span>{name} 님</span>
             :
             <span onClick={()=>setLogin(true)}>로그인/회원가입</span>
             }
