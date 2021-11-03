@@ -29,9 +29,9 @@ const GamePage = () => {
   const [onelect, setOnelect] = useState(false);
   const [selected, setSelect] = useState()
 
-  const [onkill, setKill] = useState(false)
+  const [onkill, setOnkill] = useState(false)
 
-  const [onheal, setHeal] = useState(false);
+  const [onheal, setOnheal] = useState(false);
 
   const [status, setStatus] = useState(0);
 
@@ -40,6 +40,8 @@ const GamePage = () => {
   const [elected, setElected] = useState(false);
 
   const [name, setName] = useState();
+
+  const [admin, setAdmin] = useState();
 
   const socket = io("localhost:1234");
   socket.on("connection", () => { 
@@ -100,6 +102,10 @@ const GamePage = () => {
         .then(res => {
           setUser(res.data)
         })
+      axios.post('http://localhost:1234/admin', {name: params.id})
+        .then(res => {
+          setAdmin(res.data);
+        })
   })
 
       /*  
@@ -152,25 +158,27 @@ const GamePage = () => {
   }
 
   function startElect() {
+    /*
     if(status === 0){
       if(elected){
         alert("이미 투표 하셨습니다.")
       }
       else{
-        alert(1);
-        /*
+        setOnelect(true);
+      
         axios.post('http://localhost:1234/vote', item)
-          .then(res => setElected(false))*/
+          .then(res => setElected(false))
       }
     }
     else{
       alert("지금은 투표시간이 아닙니다.")
-    }
+    }*/
+    setOnelect(true);
   }
   
   const ElectBorder = () => {
     return(
-      <S.Background>
+      <S.Background onClick={()=>setOnelect(false)}>
         <S.SelectBorder>
           <S.BH>투표할 사람을 선택해 주세요</S.BH>
         <S.SB>
@@ -190,7 +198,7 @@ const GamePage = () => {
 
   const MBorder = () => {
     return(
-      <S.Background>
+      <S.Background onClick={()=>setOnkill(false)}>
         <S.SelectBorder>
           <S.BH>살해할 사람을 선택해 주세요</S.BH>
         <S.SB>
@@ -216,7 +224,7 @@ const GamePage = () => {
 
   const DBorder = () => {
     return(
-      <S.Background>
+      <S.Background onClick={()=>setOnheal(false)}>
         <S.SelectBorder>
           <S.BH>치료할 사람을 선택해 주세요</S.BH>
         <S.SB>
@@ -241,7 +249,7 @@ const GamePage = () => {
 
   const LeaderBorder = () => {
     return(
-      <S.Background>
+      <S.Background onClick={()=>setOnleader(false)}>
         <S.LeaderBorder>
           <S.LX onClick={()=>setOnleader(false)}>X</S.LX>
           <S.UserUl>
@@ -359,7 +367,7 @@ const GamePage = () => {
             :
             <></>
           }
-          {1 === 1 ?
+          {admin ?
             <button onClick={()=>gameStart()}>게임시작</button>
             :
             <></>

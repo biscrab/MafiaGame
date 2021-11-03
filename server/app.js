@@ -398,6 +398,8 @@ app.post('/night', function(req, res){
 
 app.post('/start', function(req, res){
     if(checkLogin(req.headers.authorization)){
+        var member = getMember(req.body.name);
+        if(member.length >= 4){
         var user = getUser(req.headers.authorization);
         var admin;
         db.query(`SELECT admin from ${req.body.name}_member where name=${user}`, function(err, rows){
@@ -405,8 +407,12 @@ app.post('/start', function(req, res){
         })
         db.query(`UPDATE room status=1 where name=${req.body.name}`)
         //db.query(`TRUNCATE ${req.body.name}_member`);
-        chat({name: "사회자" , contents: "게임이 시작됩니다."});
-        var member = getMember(req.body.name);
+        chat({user: "사회자" , contents: "게임이 시작됩니다.", name: req.body.name});
+        {member.map(
+            i => (
+                db.query(`UPDATE room ingame=1 where name=${i.name}`)
+            )
+        )}
         var i;
         for(i = 0;  i < member / 4; i++){
             var random = Math.floor(Math.random() * member)
@@ -443,6 +449,10 @@ app.post('/start', function(req, res){
                 }
             })
         }
+    }
+    else{
+        res.json("인원이 부족합니다.")
+    }
     }
 })
 
