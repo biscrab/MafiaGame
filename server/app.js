@@ -6,6 +6,7 @@ var server = require('http').createServer(app);
 const mysql = require('mysql');
 const cors = require('cors');
 const fs = require('fs');
+const { resolve } = require('path/posix');
 app.use(cors())
 
 const io = require('socket.io')(server, {
@@ -26,6 +27,9 @@ db.connect();
 
 io.on('connection', function(socket) {
     console.log("연결");
+    socket.on("message", (data) => {
+        console.log(data);
+    })
 })
 
 /*
@@ -189,6 +193,7 @@ app.post('/room', async(req, res) => {
             job INT NULL DEFAULT 0,
             admin INT NULL DEFAULT 0,
             voted INT NULL DEFAULT 0,
+            action INT NULL DEFAULT 0,
             id INT NULL DEFAULT 0,
             PRIMARY KEY (name),
             UNIQUE INDEX name_UNIQUE (name ASC) VISIBLE,
@@ -474,31 +479,59 @@ function gameOver(){
     }
 }
 
-app.post('/vote', function(req, res){
-        db.query(`UPDATE ${req.body.name}_member voted += 1 WHERE (name=${req.body.user})`);
-        let mes = {name: req.body.name, contents: `${req.body.user} 한 표`, user: "사회자"}
+function getAction(name, user){
+    return new Promise((resolve, reject) => {
+        var n = 0;
+        db.query(`SELECT action from ${name}_member ${user ? `where (name=${user})`: ""}`, function(err, rows){
+            {rows.map(
+                i => (
+                    n += Number(i.action)
+                )
+            )}
+            resolve(n);
+        })
+    })
+}
+
+app.post('/vote', async(req, res) => {
+    let uaction = await getAction(req.body.name, req.body.user)
+    if(uaction === 0){
+        db.query(`UPDATE ${req.body.name}_member voted += 1 WHERE (name=${req.body.target})`);
+        db.query(`UPDATE ${req.body.name}_member action = 1 WHERE (name=${req.body.user})`)
+        let mes = {name: req.body.name, contents: `${req.body.target} 한 표`, user: "사회자"}
         chat(mes);
+        let action = await getAction(req.body.name);
+        let member = await getMember(req.body.name);
+        if(action === member){
+            judjement(req.body.name, req.body.user)
+        }
+    }
 })
 
-function judjement(name){
+app.post('/action', async(req, res) => {
+    let action = await getAction(req.body.name);
+    res.json(action)
+})
+
+function judjement(name, target){
     let m;
     let voted;
-    let target;
     var mes;
     db.query(`SELECT * from ${name}_member ORDER BY voted`, function(err, rows){
         voted = Number(rows[0].voted);
         target = Number(rows[0].target);
     })
     if(voted > m){
-        db.query(`UPDATE ${name}_mebmer status=0`)
+        db.query(`UPDATE ${name}_mebmer status=0 where name=${target}`)
         mes = {name: name, contents: `${target}이 투표로 인해 사망하였습니다.`, user: "사회자"}
         chat(mes)
     }
     else{
-        db.query(`UPDATE ${name}_mebmer status=0`)
         mes = {name: name, contents: `과반수를 넘지 못해 투표가 무효가 되었습니다.`, user: "사회자"}
         chat(mes);
     }
+    db.query(`UPDATE ${name}_mebmer action=0`)
+    db.query(`UPDATE ${name}_mebmer voted=0`)
 }
 
 app.get('/test2', function(req, res){
@@ -606,6 +639,12 @@ app.post('/admin', async(req, res) => {
     var user = await getUser(req.headers.authorization.substring(7))
     db.query(`SELECT admin from ${req.body.name}_member where (name=${user.name})`, function(err, rows){
         res.json(rows[0].admin);
+    })
+})
+
+app.post('/password', function(req, res) {
+    db.query(`SELECT password from room where name=${req.body.name}`, function(err, rows){
+        res.json(rows[0].password);
     })
 })
 

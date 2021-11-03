@@ -3,6 +3,7 @@ import React,{useEffect, useState} from 'react'
 import { useParams, useHistory } from 'react-router-dom';
 import * as S from '../styled/App'
 import io from 'socket.io-client'
+import { stat } from 'fs';
 
 const GamePage = () => {
 
@@ -43,7 +44,8 @@ const GamePage = () => {
 
   const [admin, setAdmin] = useState();
 
-  const socket = io("localhost:1234");
+  const socket = io("http://localhost:1234");
+
   socket.on("connection", () => { 
     console.log("connected"); 
   });
@@ -129,7 +131,7 @@ const GamePage = () => {
 
   const sendMessage = () => {
     if(messange){
-      //socket.emit("message", {id: params.id, contents: messange, user: "1"});
+      socket.emit("message", {id: params.id, contents: messange, user: name});
       document.body.scrollTop = document.body.scrollHeight;
     }
   };
@@ -357,12 +359,17 @@ const GamePage = () => {
       </S.CDiv>
       <S.Info>
         <S.Time>
-          {status === 0 ?
+          {status === 1 ?
             <button onClick={()=>startElect()}>투표하기</button>
             :
-              <Action />
+            <></>
           }
-          {0 ?
+          {status === 2 ?
+             <Action />
+              :
+              <></>
+          }
+          {status === 0?
             <button onClick={()=>gameStart()}>게임시작</button>
             :
             <></>
