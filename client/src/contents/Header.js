@@ -77,7 +77,10 @@ const Header = () => {
             <h3>마피아</h3>
             </div>
             {name ?
-            <span>{name} 님</span>
+            <div>
+                <S.HName>{name} 님</S.HName>
+                <span> 로그아웃</span>
+            </div>
             :
             <span onClick={()=>setLogin(true)}>로그인/회원가입</span>
             }

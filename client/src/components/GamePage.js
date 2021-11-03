@@ -15,12 +15,13 @@ const GamePage = () => {
   const [ipassword, setIpassword] = useState();
   const [onpassword, setOnpassword] = useState();
   const [user, setUser] = useState([
-  {name: "1", job: 1, status: 0}, 
+  {name: "113123123", job: 1, status: 0}, 
   {name: "1", job: 1, status: 0},
   {name: "1", job: 0, status: 0},
   {name: "1", job: 2, status: 0},
   {name: "1", job: 1, status: 0},
   {name: "1", job: 1, status: 0},
+  {name: "1", job: 1, status: 1},
   {name: "1", job: 1, status: 1}]);
 
   const [onleader, setOnleader] = useState();
@@ -298,9 +299,10 @@ const GamePage = () => {
   }
 
   var d = ["대기중", "낮", "밤"];
-  var i = ["https://cdn-icons-png.flaticon.com/512/889/889843.png",
+  var i = ["https://cdn-icons-png.flaticon.com/128/2936/2936928.png",
            "https://cdn-icons-png.flaticon.com/512/3917/3917805.png",
            "https://cdn-icons-png.flaticon.com/512/547/547433.png"]
+  var profile = "https://w7.pngwing.com/pngs/1/964/png-transparent-user-profile-computer-icons-login-profile-icon-police-officer-black-avatar.png";
 
   return (
     <>
@@ -314,15 +316,31 @@ const GamePage = () => {
       </S.TimeHead>
       <S.CDiv>
         {comments.map(
-          message => (
+          (message, index) => (
             <>
             {message.name === name ?
                 <S.MyChatDiv>
-                    <S.MyChat>{message.chat}</S.MyChat><S.CImg src={"https://w7.pngwing.com/pngs/1/964/png-transparent-user-profile-computer-icons-login-profile-icon-police-officer-black-avatar.png"}></S.CImg>
+                    {index === 0 ? 
+                    <>
+                    <S.CIDiv></S.CIDiv><S.MyChat>{message.chat}</S.MyChat><S.CIDiv><S.CImg src={profile}></S.CImg></S.CIDiv>
+                    </>
+                    :
+                    <>
+                    <S.MyChat>{message.chat}</S.MyChat><S.CIDiv>{comments[index-1].name === message.name ? <></> : <S.CImg src={profile}></S.CImg>}</S.CIDiv>
+                    </>
+                    }
                 </S.MyChatDiv>
                 :
                 <S.ChatDiv>
-                    <S.CImg src={"https://w7.pngwing.com/pngs/1/964/png-transparent-user-profile-computer-icons-login-profile-icon-police-officer-black-avatar.png"}></S.CImg><S.Chat>{message.name}: {message.chat}</S.Chat>
+                    {index === 0 ? 
+                      <>
+                        <S.CIDiv><S.CImg src={profile}></S.CImg></S.CIDiv><S.ChatF><span>{message.name}</span><S.Chat>{message.chat}</S.Chat></S.ChatF>
+                      </>
+                      :
+                      <>
+                        <S.CIDiv>{comments[index-1].name === message.name ? <></> : <S.CImg src={profile}></S.CImg>}</S.CIDiv><S.ChatF>{comments[index-1].name === message.name ? <></> : <span>{message.name}</span>}<S.Chat>{message.chat}</S.Chat></S.ChatF>
+                      </>
+                    }
                 </S.ChatDiv>
             }
             </>   
@@ -336,9 +354,19 @@ const GamePage = () => {
             :
               <Action />
           }
-          <button onClick={()=>gameStart()}>게임시작</button>
+          {0 ?
+            <button onClick={()=>gameStart()}>게임시작</button>
+            :
+            <></>
+          }
+          {1 === 1 ?
+            <button onClick={()=>gameStart()}>게임시작</button>
+            :
+            <></>
+          }
         </S.Time>
       <S.IDiv>
+        <div>
         <S.Textarea onChange={(e)=>setMessange(e.target.value)} onKeyPress={(e)=>onKeyPress(e)} value={messange}/>
         <>
         <S.CButton onClick={() => sendMessage()}>메세지 보내기</S.CButton>
@@ -348,6 +376,7 @@ const GamePage = () => {
         <S.GameStart onClick={() => gameStart()}>게임시작</S.GameStart>
         }
         </>
+        </div>
       </S.IDiv>
       </S.Info>
   </S.Game>

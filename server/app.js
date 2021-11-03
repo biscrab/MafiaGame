@@ -60,7 +60,7 @@ server.listen(1234, function () {
 });
 
 function chat(data) {
-        db.query(`INSERT INTO ${data.name}_chat (name, chat) VALUE (${data.user}, ${data.contents})`)
+        db.query(`INSERT INTO ${data.name}_chat (name, chat) VALUE (${data.user}, "${data.contents}")`)
 }
 
 // Add headers before the routes are defined
@@ -589,6 +589,13 @@ app.get('/chat', function(req, res){
 app.post('/status', function(req, res){
     db.query(`SELECT status from room where (name=${req.body.name})`, function(err, rows){
         res.json(rows[0].status);
+    })
+})
+
+app.post('/admin', async(req, res) => {
+    var user = await getUser(req.headers.authorization.substring(7))
+    db.query(`SELECT admin from ${req.body.name}_member where (name=${user.name})`, function(err, rows){
+        res.json(rows[0].admin);
     })
 })
 

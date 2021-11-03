@@ -35,6 +35,10 @@ export const Header = styled.nav`
     }
 `
 
+export const HName = styled.span`
+    padding-right: 20px;
+`
+
 export const ChatDiv = styled.div`
     display: flex;
     justify-content: flex-start;
@@ -53,20 +57,30 @@ export const MyChat = styled.span`
     background-color: blueviolet;
     color: white;
     border-radius: 5px;
-    padding: 10px;
-    width: 50px;
+    padding: 5px;
+    height: 3%;
+    padding-left: 10px;
+    padding-right: 10px;
     text-align: center;
     margin-right: 10px;
 `
 
+export const ChatF = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+`
+
 export const Chat = styled.span`
     background-color: blueviolet;
+    padding: 5px;
+    height: 3%;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
     color: white;
     border-radius: 5px;
     text-align: center;
-    padding: 10px;
-    width: 50px;
-    margin-left: 10px;
 `
 
 export const Game = styled.div`
@@ -93,9 +107,11 @@ export const TimeHead = styled.div`
 
 export const NameDiv = styled.div`
     display: flex;
+    align-items: center;
     padding-left: 5px;
     width: 100%;
     position: fixed;
+    overflow-x: auto;
     top: 6%;
     height: 5%;
     background-color: rgba(255, 255, 255, 0.3);
@@ -105,11 +121,13 @@ export const Name = styled.div`
     background-color: darkgray;
     background-color: ${props => props.bgcolor};
     border-radius: 5px;
-    width: 60px;
     text-align: center;
     margin: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
     color: black;
     color: ${props => props.color};
+    height: 60%;
 `
 
 export const MName = styled.div`
@@ -118,9 +136,11 @@ export const MName = styled.div`
     color: ${props => props.color};
     background-color: ${props => props.bgcolor};
     border-radius: 5px;
-    width: 60px;
+    padding-left: 10px;
+    padding-right: 10px;
     text-align: center;
     margin: 5px;
+    height: 60%;
 `
 
 export const CUDiv = styled.div`
@@ -135,13 +155,19 @@ export const USpan = styled.span`
 
 export const CDiv = styled.div`
     flex-direction: column;
-    padding: 2%;
+    padding-left: 2%;
+    padding-right: 2%;
     position: fixed;
     top: 16%;
     width: 96%;
-    height: 45%;
+    height: 54%;
     overflow-y: auto;
     z-index: -1;
+`
+
+export const CIDiv = styled.div`
+    height: 40px;
+    width: 40px;
 `
 
 export const CImg = styled.img`
@@ -169,14 +195,15 @@ export const Time = styled.div`
     display: flex;
     justify-content: flex-end;
     padding-right: 1%;
+    height: 20%;
 
     button{
         background-color: white;
         border: 0;
         outline: 0;
-        height: 40px;
+        height: 100%;
         border-radius: 4px 4px 0px 0px;
-        width: 150px;
+        width: 10%;
 
         :hover{
             background-color: blueviolet;
@@ -188,11 +215,17 @@ export const Time = styled.div`
 export const IDiv = styled.div`
     background-color: white;
     width: 100%;
-    height: 80px;
+    height: 80%;
     display: flex;
-    justify-content: center;
     padding-top: 40px;
     padding-bottom: 50px;
+
+    div{
+        display: flex;
+        height: 60%;
+        width: 100%;
+        justify-content: center;
+    }
 `
 
 export const Textarea = styled.textarea`
