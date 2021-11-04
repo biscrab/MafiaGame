@@ -155,6 +155,9 @@ const GamePage = () => {
     if(ipassword === password){
       setOnpassword(false);
     }
+    else{
+      alert("비밀번호가 틀렸습니다.");
+    }
   }
 
   const PasswordBorder = () => {
@@ -301,9 +304,9 @@ const GamePage = () => {
         i => (
           <>
           {i.job === 1 ?
-            <S.MName color={i.status === 0 ? "crimson" : "red"} bgcolor={i.status === 0 ? "rgba(200, 200, 200, 0.3)" : "black"}>{i.name}</S.MName>
+            <S.MName color={i.status === 0 ? "crimson" : "red"} bgcolor={i.status === 0 ? "rgba(200, 200, 200, 0.3)" : "black"}>{i.name}{i.admin ? "(방장)" : ""}</S.MName>
             :
-            <S.Name color={i.status === 0 ? "darkgray" : "rgb(50, 50, 50)"} bgcolor={i.status === 0 ? "rgba(200, 200, 200, 0.3)" : "rgb(190, 190, 190)"}>{i.name}</S.Name>
+            <S.Name color={i.status === 0 ? "darkgray" : "rgb(50, 50, 50)"} bgcolor={i.status === 0 ? "rgba(200, 200, 200, 0.3)" : "rgb(190, 190, 190)"}>{i.name}{i.admin ? "(방장)" : ""}</S.Name>
           }
           </>
         )
@@ -316,7 +319,7 @@ const GamePage = () => {
       <>
       {user.map(
         i => (
-          <S.Name color={i.status === 0 ? "darkgray" : "rgb(50, 50, 50)"} bgcolor={i.status === 0 ? "rgba(200, 200, 200, 0.3)" : "rgb(190, 190, 190)"}>{i.name}</S.Name>
+          <S.Name color={i.status === 0 ? "darkgray" : "rgb(50, 50, 50)"} bgcolor={i.status === 0 ? "rgba(200, 200, 200, 0.3)" : "rgb(190, 190, 190)"}>{i.name}{i.admin ? "(방장)" : ""}</S.Name>
         )
       )}
       </>

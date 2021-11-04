@@ -6,7 +6,6 @@ var server = require('http').createServer(app);
 const mysql = require('mysql');
 const cors = require('cors');
 const fs = require('fs');
-const { resolve } = require('path/posix');
 app.use(cors())
 
 const io = require('socket.io')(server, {
