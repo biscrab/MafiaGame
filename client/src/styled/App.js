@@ -433,7 +433,7 @@ export const passwordBorder = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 150px;
+    height: 200px;
     width: 300px;
 `
 
@@ -523,8 +523,13 @@ export const RoomCard = styled.div`
 `
 
 export const Status = styled.div`
-    color: green;
+    color: ${props => props.color};
     padding-right: 10px;
+`
+
+export const Lock = styled.div`
+    color: dimgray;
+    padding-left: 5px;
 `
 
 export const CName = styled.div`

@@ -16,6 +16,7 @@ const MainPage = () => {
         axios.get('http://localhost:1234/room')
             .then(res => {
                 setRlist([...res.data]);
+                console.log(res.data);
         })
     })
 

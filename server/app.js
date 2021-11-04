@@ -220,7 +220,7 @@ app.get('/tet', async(req, res) => {
 app.get('/room', function(req, res){
     db.query('SELECT * FROM room', function(err, rows){
         if(err){
-            res.json("error");
+            res.json("");
         }  
         else{
             res.json(rows);

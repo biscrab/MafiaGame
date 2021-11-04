@@ -3,7 +3,6 @@ import React,{useEffect, useState} from 'react'
 import { useParams, useHistory } from 'react-router-dom';
 import * as S from '../styled/App'
 import io from 'socket.io-client'
-import { stat } from 'fs';
 
 const GamePage = () => {
 
@@ -43,6 +42,8 @@ const GamePage = () => {
   const [name, setName] = useState();
 
   const [admin, setAdmin] = useState();
+
+  const [password, setPassword] = useState();
 
   const socket = io("http://localhost:1234");
 
@@ -110,6 +111,16 @@ const GamePage = () => {
         })
   })
 
+  useEffect(()=>{
+    axios.post('http://localhost:1234/password', {name: params.id})
+      .then(res => {
+        setPassword(res.data);
+        if(res.data&&user.includes(i => i.name === name) === false){
+          setOnpassword(true);
+        }
+      })
+  },[])
+
       /*  
     axios.get('http://localhost:1234/day', params.id)
       .then(res => setDay(res.data))
@@ -140,14 +151,19 @@ const GamePage = () => {
     axios.post('/start', {name: params.id})
   }
 
+  const inputPassword = () => {
+    if(ipassword === password){
+      setOnpassword(false);
+    }
+  }
+
   const PasswordBorder = () => {
     return(
     <S.Background>
       <S.passwordBorder>
-        <S.X>X</S.X>
         <h2>비밀번호</h2>
         <S.LoginInput onChange={(e)=>setIpassword(e.target.value)} value={ipassword}/>
-        <S.LoginButton>입력</S.LoginButton>
+        <S.LoginButton onClick={()=>inputPassword()} color={ipassword ? "blueviolet" : ""}>입력</S.LoginButton>
       </S.passwordBorder>
     </S.Background>
     );

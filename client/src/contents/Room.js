@@ -33,6 +33,13 @@ const Room = ({item}) => {
                 <i class="fas fa-circle fa-xs"></i>
             </S.Status>
                 <span>{item.name} ({member}/{item.max})</span>
+                {item.password ?
+            <S.Lock>
+                <i class="fas fa-lock"></i>
+            </S.Lock>
+            :
+            <></>
+            }
             </S.CName>
         </S.RoomCard>
     )
