@@ -161,20 +161,21 @@ function getJob(req){
 }
 
 app.post('/signup', async(req, res) => {
-    var check = await getMember(req);
-    if(check){
-    db.query(`INSERT INTO user (name, password) VALUES (?, ?);`, [req.body.name, req.body.password], function(error, results, fields){
-        if(error){
-            res.json(error);
+   db.query(`SELECT * from user where name=${req.body.name}`, function(err, rows){
+        if(rows){
+            res.json("중복");
         }
         else{
-            res.json("성공");
+            db.query(`INSERT INTO user (name, password) VALUES (?, ?);`, [req.body.name, req.body.password], function(error, results, fields){
+                if(error){
+                    res.json(error);
+                }
+                else{
+                    res.json("성공");
+                }
+            });
         }
     });
-    }
-    else{
-        res.json("중복");
-    }
 });   
 
 app.post('/room', async(req, res) => {
