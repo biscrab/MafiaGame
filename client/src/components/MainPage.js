@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import * as S from '../styled/App'
 import Room from '../contents/Room'
 import axios from 'axios'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 
 const MainPage = () => {
 
